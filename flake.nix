@@ -19,15 +19,6 @@
             nodejs_20
             git
           ];
-
-          shellHook = ''
-            export PATH="$PWD/node_modules/.bin:$PATH"
-            echo "Anakin's Music App dev environment"
-            echo "  npm install       – install dependencies"
-            echo "  npm start         – start Expo dev server (scan QR with Expo Go)"
-            echo "  npm test          – run Jest test suite"
-            echo "  npm run test:watch – run tests in watch mode"
-          '';
         };
       });
 }
