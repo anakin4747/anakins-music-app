@@ -18,7 +18,6 @@
           buildInputs = with pkgs; [
             # JavaScript runtime & package management
             nodejs_20
-            nodePackages.npm
 
             # Expo CLI (run via npx, but ensure node is available)
             # Used as: npx expo start
