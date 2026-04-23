@@ -1,0 +1,32 @@
+{
+  "expo": {
+    "name": "Anakin's Music App",
+    "slug": "anakins-music-app",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0a0a0a"
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.anakin.musicapp"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#0a0a0a"
+      },
+      "package": "com.anakin.musicapp"
+    },
+    "web": {
+      "bundler": "metro"
+    },
+    "scheme": "anakins-music-app",
+    "plugins": ["expo-router"]
+  }
+}
