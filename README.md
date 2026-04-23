@@ -5,9 +5,8 @@ React Native music player built with Expo Go.
 ## Quick Start
 
 ```sh
-nix develop       # enter pinned dev environment
-npm install       # install dependencies
-npm start         # start Expo dev server
+nix develop   # enter pinned dev environment
+make          # install dependencies and start Expo dev server
 ```
 
 Scan the QR code with the [Expo Go](https://expo.dev/go) app on your phone.
@@ -16,7 +15,7 @@ Scan the QR code with the [Expo Go](https://expo.dev/go) app on your phone.
 
 | Command | Description |
 |---|---|
-| `npm start` | Start Expo dev server |
+| `make` | Install dependencies (if needed) and start Expo dev server |
 | `npm test` | Run tests once |
 | `npm run test:watch` | Run tests in watch mode |
 | `npm run test:coverage` | Run tests with coverage report |
@@ -47,3 +46,4 @@ assets/        # images and fonts
 | Jest | https://jestjs.io/docs/getting-started |
 | Testing Library | https://testing-library.com/docs/react-native-testing-library/intro |
 | Nix Flakes | https://nixos.wiki/wiki/Flakes |
+| GNU Make | https://www.gnu.org/software/make/manual/make.html |
