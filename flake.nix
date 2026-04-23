@@ -16,17 +16,7 @@
           name = "anakins-music-app";
 
           buildInputs = with pkgs; [
-            # JavaScript runtime & package management
             nodejs_20
-
-            # Expo CLI (run via npx, but ensure node is available)
-            # Used as: npx expo start
-
-            # Android tooling (optional — comment out if not targeting Android locally)
-            # android-tools
-
-            # Useful utilities
-            watchman   # file watcher required by Metro bundler on Linux
             git
           ];
 
