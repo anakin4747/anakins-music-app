@@ -50,7 +50,7 @@ describe('PlaylistsScreen', () => {
 
   it('shows no server configured when no server has been pinged', () => {
     render(<PlaylistsScreen />);
-    expect(screen.getByTestId('playlists-error')).toHaveTextContent('no server configured');
+    expect(screen.getByTestId('playlists-no-server')).toHaveTextContent('no server configured');
   });
 
   it('shows a loading indicator while fetching', async () => {
@@ -87,7 +87,7 @@ describe('PlaylistsScreen', () => {
     mockGetPlaylists.mockResolvedValue({ ok: false, error: 'unreachable' });
     render(<PlaylistsScreen />);
     await act(async () => {});
-    expect(screen.getByTestId('playlists-error')).toHaveTextContent('unreachable');
+    expect(screen.getByTestId('playlists-fetch-error')).toHaveTextContent('unreachable');
   });
 
   it('shows empty list message when there are no playlists', async () => {

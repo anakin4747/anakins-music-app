@@ -39,7 +39,7 @@ export default function PlaylistsScreen() {
           <Text testID="playlists-heading" style={styles.heading}>playlists</Text>
 
           {state.phase === 'no-server' && (
-            <Text testID="playlists-error" style={styles.message}>no server configured</Text>
+            <Text testID="playlists-no-server" style={styles.message}>no server configured</Text>
           )}
 
           {state.phase === 'loading' && (
@@ -47,7 +47,7 @@ export default function PlaylistsScreen() {
           )}
 
           {state.phase === 'error' && (
-            <Text testID="playlists-error" style={styles.message}>{state.error}</Text>
+            <Text testID="playlists-fetch-error" style={styles.message}>{state.error}</Text>
           )}
 
           {state.phase === 'done' && state.playlists.length === 0 && (

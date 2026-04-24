@@ -39,7 +39,7 @@ export default function AlbumsScreen() {
           <Text testID="albums-heading" style={styles.heading}>albums</Text>
 
           {state.phase === 'no-server' && (
-            <Text testID="albums-error" style={styles.message}>no server configured</Text>
+            <Text testID="albums-no-server" style={styles.message}>no server configured</Text>
           )}
 
           {state.phase === 'loading' && (
@@ -47,7 +47,7 @@ export default function AlbumsScreen() {
           )}
 
           {state.phase === 'error' && (
-            <Text testID="albums-error" style={styles.message}>{state.error}</Text>
+            <Text testID="albums-fetch-error" style={styles.message}>{state.error}</Text>
           )}
 
           {state.phase === 'done' && state.albums.length === 0 && (
