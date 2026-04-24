@@ -15,7 +15,7 @@ export function MainMenu() {
   return (
     <View style={styles.container}>
       {ITEMS.map(({ label, route }) => (
-        <Pressable key={label} testID={`menu-item-${label}`} onPress={() => router.push(route)}>
+        <Pressable key={label} testID={`menu-item-${label}`} onPress={() => router.push(route)} style={styles.pressable}>
           <Text style={styles.item}>{label}</Text>
         </Pressable>
       ))}
@@ -35,5 +35,9 @@ const styles = StyleSheet.create({
     fontFamily: 'JetBrainsMono_400Regular',
     color: '#ffffff',
     letterSpacing: 1,
+  },
+  pressable: {
+    paddingVertical: 16,
+    paddingRight: 32,
   },
 });
