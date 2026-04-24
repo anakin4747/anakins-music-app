@@ -107,12 +107,40 @@ describe('ServersScreen', () => {
       await act(async () => { resolvePing('ok'); });
     });
 
+    it('appends a new ping sent on each press', async () => {
+      let resolve1!: (v: 'ok') => void;
+      let resolve2!: (v: 'ok') => void;
+      mockPing
+        .mockReturnValueOnce(new Promise((r) => { resolve1 = r; }))
+        .mockReturnValueOnce(new Promise((r) => { resolve2 = r; }));
+      render(<ServersScreen />);
+      fillForm();
+      act(() => { fireEvent.press(screen.getByTestId('server-ping-button')); });
+      act(() => { fireEvent.press(screen.getByTestId('server-ping-button')); });
+      const lines = screen.getAllByTestId('server-log-line');
+      expect(lines).toHaveLength(2);
+      expect(lines[0]).toHaveTextContent('ping sent');
+      expect(lines[1]).toHaveTextContent('ping sent');
+      await act(async () => { resolve1('ok'); resolve2('ok'); });
+    });
+
+    it('appends the result after its ping sent line', async () => {
+      mockPing.mockResolvedValue('ok');
+      render(<ServersScreen />);
+      fillForm();
+      await act(async () => { fireEvent.press(screen.getByTestId('server-ping-button')); });
+      const lines = screen.getAllByTestId('server-log-line');
+      expect(lines[0]).toHaveTextContent('ping sent');
+      expect(lines[1]).toHaveTextContent('ping ok');
+    });
+
     it('shows ping ok when ping returns ok', async () => {
       mockPing.mockResolvedValue('ok');
       render(<ServersScreen />);
       fillForm();
       await act(async () => { fireEvent.press(screen.getByTestId('server-ping-button')); });
-      expect(screen.getByTestId('server-log')).toHaveTextContent('ping ok');
+      const lines = screen.getAllByTestId('server-log-line');
+      expect(lines[lines.length - 1]).toHaveTextContent('ping ok');
     });
 
     it('shows wrong credentials when ping returns wrong-credentials', async () => {
@@ -120,7 +148,8 @@ describe('ServersScreen', () => {
       render(<ServersScreen />);
       fillForm();
       await act(async () => { fireEvent.press(screen.getByTestId('server-ping-button')); });
-      expect(screen.getByTestId('server-log')).toHaveTextContent('wrong credentials');
+      const lines = screen.getAllByTestId('server-log-line');
+      expect(lines[lines.length - 1]).toHaveTextContent('wrong credentials');
     });
 
     it('shows invalid url when ping returns invalid-url', async () => {
@@ -128,7 +157,8 @@ describe('ServersScreen', () => {
       render(<ServersScreen />);
       fillForm();
       await act(async () => { fireEvent.press(screen.getByTestId('server-ping-button')); });
-      expect(screen.getByTestId('server-log')).toHaveTextContent('invalid url');
+      const lines = screen.getAllByTestId('server-log-line');
+      expect(lines[lines.length - 1]).toHaveTextContent('invalid url');
     });
 
     it('shows server not found when ping returns server-not-found', async () => {
@@ -136,7 +166,8 @@ describe('ServersScreen', () => {
       render(<ServersScreen />);
       fillForm();
       await act(async () => { fireEvent.press(screen.getByTestId('server-ping-button')); });
-      expect(screen.getByTestId('server-log')).toHaveTextContent('server not found');
+      const lines = screen.getAllByTestId('server-log-line');
+      expect(lines[lines.length - 1]).toHaveTextContent('server not found');
     });
 
     it('shows unreachable when ping returns unreachable', async () => {
@@ -144,7 +175,8 @@ describe('ServersScreen', () => {
       render(<ServersScreen />);
       fillForm();
       await act(async () => { fireEvent.press(screen.getByTestId('server-ping-button')); });
-      expect(screen.getByTestId('server-log')).toHaveTextContent('unreachable');
+      const lines = screen.getAllByTestId('server-log-line');
+      expect(lines[lines.length - 1]).toHaveTextContent('unreachable');
     });
 
     it('shows timed out when ping returns timed-out', async () => {
@@ -152,7 +184,8 @@ describe('ServersScreen', () => {
       render(<ServersScreen />);
       fillForm();
       await act(async () => { fireEvent.press(screen.getByTestId('server-ping-button')); });
-      expect(screen.getByTestId('server-log')).toHaveTextContent('timed out');
+      const lines = screen.getAllByTestId('server-log-line');
+      expect(lines[lines.length - 1]).toHaveTextContent('timed out');
     });
   });
 

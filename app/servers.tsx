@@ -46,9 +46,9 @@ export default function ServersScreen() {
     if (!usr) { setLog(['usr required']); return; }
     if (!passwd) { setLog(['passwd required']); return; }
 
-    setLog(['ping sent']);
+    setLog((prev) => [...prev, 'ping sent']);
     const result = await ping(url, usr, passwd);
-    setLog([LOG_MESSAGES[result]]);
+    setLog((prev) => [...prev, LOG_MESSAGES[result]]);
   }
 
   return (
@@ -107,7 +107,7 @@ export default function ServersScreen() {
           {log.length > 0 && (
             <View testID="server-log" style={styles.field}>
               {log.map((line, i) => (
-                <Text key={i} style={styles.label}>{line}</Text>
+                <Text key={i} testID="server-log-line" style={styles.label}>{line}</Text>
               ))}
             </View>
           )}
