@@ -28,6 +28,11 @@ describe('MainMenu', () => {
     expect(screen.getByTestId('menu-item-albums')).toHaveTextContent('albums');
   });
 
+  it('renders the servers item', () => {
+    render(<MainMenu />);
+    expect(screen.getByTestId('menu-item-servers')).toHaveTextContent('servers');
+  });
+
   it('navigates to /queues when queues is pressed', () => {
     render(<MainMenu />);
     fireEvent.press(screen.getByTestId('menu-item-queues'));
@@ -43,6 +48,12 @@ describe('MainMenu', () => {
   it('does not navigate when albums is pressed', () => {
     render(<MainMenu />);
     fireEvent.press(screen.getByTestId('menu-item-albums'));
+    expect(mockPush).not.toHaveBeenCalled();
+  });
+
+  it('does not navigate when servers is pressed', () => {
+    render(<MainMenu />);
+    fireEvent.press(screen.getByTestId('menu-item-servers'));
     expect(mockPush).not.toHaveBeenCalled();
   });
 });

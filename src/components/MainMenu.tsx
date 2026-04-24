@@ -1,18 +1,19 @@
 import { Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { useRouter } from 'expo-router';
 
-type Route = '/queues' | '/playlists' | '/albums';
+type Route = '/queues' | '/playlists' | '/albums' | '/servers';
 
 const ITEMS: { label: string; route: Route; enabled: boolean }[] = [
   { label: 'queues', route: '/queues', enabled: true },
   { label: 'playlists', route: '/playlists', enabled: false },
   { label: 'albums', route: '/albums', enabled: false },
+  { label: 'servers', route: '/servers', enabled: false },
 ];
 
 export function MainMenu() {
   const router = useRouter();
   const { height } = useWindowDimensions();
-  const halfGap = height / 8;
+  const halfGap = height / 10;
 
   return (
     <View style={styles.container}>
