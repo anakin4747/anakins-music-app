@@ -7,7 +7,7 @@ const ITEMS: { label: string; route: Route; enabled: boolean }[] = [
   { label: 'queues', route: '/queues', enabled: true },
   { label: 'playlists', route: '/playlists', enabled: false },
   { label: 'albums', route: '/albums', enabled: false },
-  { label: 'servers', route: '/servers', enabled: false },
+  { label: 'servers', route: '/servers', enabled: true },
 ];
 
 export function MainMenu() {

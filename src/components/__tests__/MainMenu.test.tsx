@@ -51,9 +51,9 @@ describe('MainMenu', () => {
     expect(mockPush).not.toHaveBeenCalled();
   });
 
-  it('does not navigate when servers is pressed', () => {
+  it('navigates to /servers when servers is pressed', () => {
     render(<MainMenu />);
     fireEvent.press(screen.getByTestId('menu-item-servers'));
-    expect(mockPush).not.toHaveBeenCalled();
+    expect(mockPush).toHaveBeenCalledWith('/servers');
   });
 });
