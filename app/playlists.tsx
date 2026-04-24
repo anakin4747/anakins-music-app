@@ -34,7 +34,7 @@ export default function PlaylistsScreen() {
   return (
     <SwipeBackView onSwipeRight={() => router.back()}>
       <SafeAreaView style={styles.safeArea}>
-        <ScrollView contentContainerStyle={styles.inner}>
+        <ScrollView style={styles.scrollView} contentContainerStyle={styles.inner}>
           <Text testID="playlists-heading" style={styles.heading}>playlists</Text>
 
           {state.phase === 'no-server' && (
@@ -66,6 +66,7 @@ export default function PlaylistsScreen() {
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1 },
+  scrollView: { flex: 1 },
   inner: { flexGrow: 1, paddingHorizontal: 24 },
   heading: {
     fontSize: 24,
