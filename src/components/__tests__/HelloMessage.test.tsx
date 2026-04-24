@@ -4,12 +4,12 @@ import { HelloMessage } from '../HelloMessage';
 
 describe('HelloMessage', () => {
   it('renders the name in the title', () => {
-    render(<HelloMessage name="Anakin" />);
-    expect(screen.getByTestId('hello-title')).toHaveTextContent('hello, Anakin!');
+    render(<HelloMessage name="anakin" />);
+    expect(screen.getByTestId('hello-title')).toHaveTextContent('hello, anakin!');
   });
 
   it('renders the subtitle', () => {
-    render(<HelloMessage name="Anakin" />);
+    render(<HelloMessage name="anakin" />);
     expect(screen.getByTestId('hello-subtitle')).toHaveTextContent(
       'your music player is warming up...'
     );

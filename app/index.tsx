@@ -4,7 +4,7 @@ import { HelloMessage } from '@/components/HelloMessage';
 export default function HomeScreen() {
   return (
     <View style={styles.container}>
-      <HelloMessage name="Anakin" />
+      <HelloMessage name="anakin" />
     </View>
   );
 }
