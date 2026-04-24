@@ -1,4 +1,4 @@
-import { PanResponder, StyleSheet, View } from 'react-native';
+import { PanResponder, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { ReactNode, useRef } from 'react';
 
 const SWIPE_THRESHOLD = 50;
@@ -6,7 +6,7 @@ const SWIPE_THRESHOLD = 50;
 interface SwipeOpenViewProps {
   onSwipeLeft: () => void;
   children: ReactNode;
-  style?: object;
+  style?: StyleProp<ViewStyle>;
 }
 
 export function SwipeOpenView({ onSwipeLeft, children, style }: SwipeOpenViewProps) {
