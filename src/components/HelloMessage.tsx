@@ -24,12 +24,13 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 32,
-    fontWeight: 'bold',
+    fontFamily: 'JetBrainsMono_700Bold',
     color: '#ffffff',
     letterSpacing: 1,
   },
   subtitle: {
     fontSize: 16,
+    fontFamily: 'JetBrainsMono_400Regular',
     color: '#888888',
   },
 });
