@@ -1,4 +1,5 @@
 import React from 'react';
+import { Keyboard } from 'react-native';
 import { render, screen, fireEvent, act } from '@testing-library/react-native';
 import ServersScreen from '../../../app/servers';
 
@@ -154,5 +155,13 @@ describe('ServersScreen', () => {
       await act(async () => { fireEvent.press(screen.getByTestId('server-ping-button')); });
       expect(screen.getByTestId('server-log')).toHaveTextContent('timed out');
     });
+  });
+
+  it('dismisses the keyboard when tapping outside the form', () => {
+    const dismissSpy = jest.spyOn(Keyboard, 'dismiss');
+    render(<ServersScreen />);
+    fireEvent.press(screen.getByTestId('server-dismiss-area'));
+    expect(dismissSpy).toHaveBeenCalled();
+    dismissSpy.mockRestore();
   });
 });

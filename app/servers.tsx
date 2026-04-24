@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Keyboard, Pressable, StyleSheet, Text, TextInput, TouchableWithoutFeedback, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { SwipeBackView } from '@/components/SwipeBackView';
@@ -54,6 +54,8 @@ export default function ServersScreen() {
   return (
     <SwipeBackView onSwipeRight={() => router.back()}>
       <SafeAreaView style={styles.safeArea}>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <View testID="server-dismiss-area" style={styles.inner}>
         <Text testID="server-heading" style={styles.heading}>
           first server
         </Text>
@@ -106,6 +108,8 @@ export default function ServersScreen() {
             ))}
           </View>
         )}
+          </View>
+        </TouchableWithoutFeedback>
       </SafeAreaView>
     </SwipeBackView>
   );
@@ -115,6 +119,9 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     paddingHorizontal: 24,
+  },
+  inner: {
+    flex: 1,
   },
   heading: {
     fontSize: 24,
