@@ -5,18 +5,18 @@ import { HelloMessage } from '../HelloMessage';
 describe('HelloMessage', () => {
   it('renders the name in the title', () => {
     render(<HelloMessage name="Anakin" />);
-    expect(screen.getByTestId('hello-title')).toHaveTextContent('Hello, Anakin!');
+    expect(screen.getByTestId('hello-title')).toHaveTextContent('hello, Anakin!');
   });
 
   it('renders the subtitle', () => {
     render(<HelloMessage name="Anakin" />);
     expect(screen.getByTestId('hello-subtitle')).toHaveTextContent(
-      'Your music player is warming up...'
+      'your music player is warming up...'
     );
   });
 
   it('renders different names', () => {
     render(<HelloMessage name="Padme" />);
-    expect(screen.getByTestId('hello-title')).toHaveTextContent('Hello, Padme!');
+    expect(screen.getByTestId('hello-title')).toHaveTextContent('hello, Padme!');
   });
 });

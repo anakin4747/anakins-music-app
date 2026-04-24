@@ -8,10 +8,10 @@ export function HelloMessage({ name }: HelloMessageProps) {
   return (
     <View style={styles.container}>
       <Text style={styles.title} testID="hello-title">
-        Hello, {name}!
+        hello, {name}!
       </Text>
       <Text style={styles.subtitle} testID="hello-subtitle">
-        Your music player is warming up...
+        your music player is warming up...
       </Text>
     </View>
   );
