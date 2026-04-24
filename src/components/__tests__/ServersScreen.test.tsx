@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent, act } from '@testing-library/react-native';
 import ServersScreen from '../../../app/servers';
-import { resetServerConfigs } from '@/stores/serverConfigs';
+import { resetServerConfigs, getLastPingedServerConfig, setServerConfig } from '@/stores/serverConfigs';
 
 jest.mock('expo-router', () => ({
   useRouter: () => ({ back: jest.fn(), push: mockPush }),
@@ -271,6 +271,17 @@ describe('ServersScreen', () => {
       mockParams = { index: '1' };
       render(<ServersScreen />);
       expect(screen.getByTestId('server-url-input').props.value).toBe('http://one');
+    });
+  });
+
+  describe('last pinged server', () => {
+    it('records the current server index when ping is pressed', async () => {
+      mockPing.mockResolvedValue('ok');
+      mockParams = { index: '2' };
+      setServerConfig(2, { url: 'http://two', usr: 'u', passwd: 'p' });
+      render(<ServersScreen />);
+      await act(async () => { fireEvent.press(screen.getByTestId('server-ping-button')); });
+      expect(getLastPingedServerConfig()?.url).toBe('http://two');
     });
   });
 });

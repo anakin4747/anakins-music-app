@@ -5,7 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { SwipeBackView } from '@/components/SwipeBackView';
 import { ping, PingResult } from '@/services/navidrome';
 import { toOrdinal } from '@/utils/ordinal';
-import { getServerConfig, setServerConfig } from '@/stores/serverConfigs';
+import { getServerConfig, setServerConfig, setLastPingedServerIndex } from '@/stores/serverConfigs';
 
 const LOG_MESSAGES: Record<PingResult, string> = {
   'ok': 'ping ok',
@@ -46,6 +46,7 @@ export default function ServersScreen() {
     if (!usr) { setLog(['usr required']); return; }
     if (!passwd) { setLog(['passwd required']); return; }
 
+    setLastPingedServerIndex(index);
     setLog((prev) => [...prev, 'ping sent']);
     const result = await ping(url, usr, passwd);
     setLog((prev) => [...prev, LOG_MESSAGES[result]]);
