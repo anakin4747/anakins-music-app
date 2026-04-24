@@ -55,12 +55,12 @@ trap cleanup EXIT INT TERM
 # ---------------------------------------------------------------------------
 # Start Navidrome.
 # ---------------------------------------------------------------------------
-echo "[navidrome] starting on http://127.0.0.1:$DEV_PORT ..."
+echo "[navidrome] starting on http://0.0.0.0:$DEV_PORT ..."
 "$NAVIDROME_BIN" \
 	--datafolder "$DATA_DIR" \
 	--musicfolder "$MUSIC_DIR" \
 	--port "$DEV_PORT" \
-	--address 127.0.0.1 \
+	--address 0.0.0.0 \
 	--loglevel error \
 	--nobanner &
 NAVIDROME_PID=$!
