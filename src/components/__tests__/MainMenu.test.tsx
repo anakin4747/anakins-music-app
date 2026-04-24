@@ -33,4 +33,16 @@ describe('MainMenu', () => {
     fireEvent.press(screen.getByTestId('menu-item-queues'));
     expect(mockPush).toHaveBeenCalledWith('/queues');
   });
+
+  it('does not navigate when playlists is pressed', () => {
+    render(<MainMenu />);
+    fireEvent.press(screen.getByTestId('menu-item-playlists'));
+    expect(mockPush).not.toHaveBeenCalled();
+  });
+
+  it('does not navigate when albums is pressed', () => {
+    render(<MainMenu />);
+    fireEvent.press(screen.getByTestId('menu-item-albums'));
+    expect(mockPush).not.toHaveBeenCalled();
+  });
 });

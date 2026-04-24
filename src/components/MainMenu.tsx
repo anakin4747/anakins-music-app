@@ -1,29 +1,31 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { useRouter } from 'expo-router';
 
 type Route = '/queues' | '/playlists' | '/albums';
 
-const ITEMS: { label: string; route: Route }[] = [
-  { label: 'queues', route: '/queues' },
-  { label: 'playlists', route: '/playlists' },
-  { label: 'albums', route: '/albums' },
+const ITEMS: { label: string; route: Route; enabled: boolean }[] = [
+  { label: 'queues', route: '/queues', enabled: true },
+  { label: 'playlists', route: '/playlists', enabled: false },
+  { label: 'albums', route: '/albums', enabled: false },
 ];
 
 export function MainMenu() {
   const router = useRouter();
+  const { height } = useWindowDimensions();
+  const halfGap = height / 8;
 
   return (
     <View style={styles.container}>
-      {ITEMS.map(({ label, route }) => (
+      {ITEMS.map(({ label, route, enabled }) => (
         <Pressable
-            key={label}
-            testID={`menu-item-${label}`}
-            onPress={() => router.push(route)}
-            style={styles.pressable}
-            hitSlop={{ top: 200, bottom: 200 }}
-          >
-            <Text style={styles.item}>{label}</Text>
-          </Pressable>
+          key={label}
+          testID={`menu-item-${label}`}
+          onPress={enabled ? () => router.push(route) : undefined}
+          style={styles.pressable}
+          hitSlop={{ top: halfGap, bottom: halfGap }}
+        >
+          <Text style={styles.item}>{label}</Text>
+        </Pressable>
       ))}
     </View>
   );
@@ -41,8 +43,5 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     letterSpacing: 1,
   },
-  pressable: {
-    paddingVertical: 16,
-    paddingRight: 32,
-  },
+  pressable: {},
 });
