@@ -44,6 +44,12 @@ assets/        images and fonts
 - Use `testID` props for element selection in tests (not text/style queries)
 - Path alias `@/` maps to `src/`
 
+## Skills
+
+Always load and follow the TDD skill when writing or modifying code:
+
+- `.skills/tdd/SKILL.md` — test-driven development workflow (Red → Green → Refactor)
+
 ## Hot Reloading
 
 Expo Go supports fast refresh out of the box. Save any file and the app updates instantly without losing state. Full reload: shake device → **Reload**.
