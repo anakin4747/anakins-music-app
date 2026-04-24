@@ -136,12 +136,11 @@ echo "[navidrome] admin user created (admin / admin)"
 SONGS_URL="http://127.0.0.1:$DEV_PORT/rest/getSongs.view?u=admin&p=admin&c=dev&f=json&v=1.16.1"
 echo "[navidrome] waiting for library scan..."
 for i in $(seq 1 60); do
-	COUNT=$(curl -sf "$SONGS_URL" | python3 -c "import sys,json; d=json.load(sys.stdin); print(len(d.get('subsonic-response',{}).get('song',[])))" 2>/dev/null || echo 0)
-	if [ "${COUNT:-0}" -gt 0 ]; then
-		echo "[navidrome] library scan complete ($COUNT tracks indexed)"
+	if curl -sf "$SONGS_URL" 2>/dev/null | grep -q '"id"'; then
+		echo "[navidrome] library scan complete"
 		break
 	fi
-	[ "$i" -eq 60 ] && echo "[navidrome] warning: scan timed out, playlists may be empty"
+	[ "$i" -eq 60 ] && echo "[navidrome] warning: scan timed out, continuing anyway"
 	sleep 0.5
 done
 
@@ -152,8 +151,10 @@ echo "[navidrome] creating fake playlists..."
 
 create_playlist() {
 	local name="$1"
-	curl -sf -o /dev/null \
-		"http://127.0.0.1:$DEV_PORT/rest/createPlaylist.view?u=admin&p=admin&c=dev&f=json&v=1.16.1&name=$(python3 -c "import urllib.parse,sys; print(urllib.parse.quote(sys.argv[1]))" "$name")"
+	curl -sf -o /dev/null -G \
+		"http://127.0.0.1:$DEV_PORT/rest/createPlaylist.view" \
+		--data-urlencode "name=$name" \
+		-d "u=admin&p=admin&c=dev&f=json&v=1.16.1"
 }
 
 create_playlist "Hyperdrive Hits"
