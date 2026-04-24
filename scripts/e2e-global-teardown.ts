@@ -1,7 +1,6 @@
-import { rmSync } from 'fs';
+import { rmSync, readFileSync } from 'fs';
 import { tmpdir } from 'os';
 import { join } from 'path';
-import { readFileSync } from 'fs';
 
 const E2E_STATE_FILE = join(tmpdir(), 'navidrome-e2e-state.json');
 

@@ -78,10 +78,6 @@ export default async function globalSetup(): Promise<void> {
   );
 
   // Wait for the HTTP server to be up.
-  const pingUrl =
-    `http://127.0.0.1:${E2E_PORT}/rest/ping.view` +
-    `?u=x&p=x&c=e2e&f=json&v=1.16.1`;
-
   // On first run there are no users so the ping will return a 200 with an
   // auth error – that is fine, the server is up.
   await waitForNavidrome(`http://127.0.0.1:${E2E_PORT}/app`, 20000);
