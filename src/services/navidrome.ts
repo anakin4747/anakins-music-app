@@ -30,11 +30,9 @@ function makeApi(url: string, username: string, password: string): SubsonicAPI {
 }
 
 function classifyNetworkError(err: unknown): FetchError {
-  if (err instanceof Error) {
-    const cause = (err as { cause?: { code?: string } }).cause;
-    if (cause?.code === 'ENOTFOUND') return 'server-not-found';
-    if (cause?.code === 'ECONNREFUSED') return 'unreachable';
-  }
+  const cause = (err as { cause?: { code?: string; message?: string } })?.cause;
+  if (cause?.code === 'ENOTFOUND' || cause?.message?.includes('ENOTFOUND')) return 'server-not-found';
+  if (cause?.code === 'ECONNREFUSED' || cause?.message?.includes('ECONNREFUSED')) return 'unreachable';
   return 'unreachable';
 }
 
@@ -59,13 +57,9 @@ export async function ping(url: string, username: string, password: string): Pro
     if (code === 40 || code === 41) return 'wrong-credentials';
     return 'unreachable';
   } catch (err: unknown) {
-    if (err instanceof Error) {
-      if (err.name === 'AbortError') return 'timed-out';
-      const cause = (err as { cause?: { code?: string; message?: string } }).cause;
-      if (cause?.code === 'ENOTFOUND' || cause?.message?.includes('ENOTFOUND')) return 'server-not-found';
-      if (cause?.code === 'ECONNREFUSED' || cause?.message?.includes('ECONNREFUSED')) return 'unreachable';
-    }
-    return 'unreachable';
+    const asErr = err as { name?: string; cause?: { code?: string; message?: string } };
+    if (asErr?.name === 'AbortError') return 'timed-out';
+    return classifyNetworkError(err);
   } finally {
     clearTimeout(timer!);
   }
