@@ -1,14 +1,23 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { useRouter } from 'expo-router';
 
-const ITEMS = ['queues', 'playlists', 'albums'] as const;
+type Route = '/queues' | '/playlists' | '/albums';
+
+const ITEMS: { label: string; route: Route }[] = [
+  { label: 'queues', route: '/queues' },
+  { label: 'playlists', route: '/playlists' },
+  { label: 'albums', route: '/albums' },
+];
 
 export function MainMenu() {
+  const router = useRouter();
+
   return (
     <View style={styles.container}>
-      {ITEMS.map((item) => (
-        <Text key={item} testID={`menu-item-${item}`} style={styles.item}>
-          {item}
-        </Text>
+      {ITEMS.map(({ label, route }) => (
+        <Pressable key={label} testID={`menu-item-${label}`} onPress={() => router.push(route)}>
+          <Text style={styles.item}>{label}</Text>
+        </Pressable>
       ))}
     </View>
   );
