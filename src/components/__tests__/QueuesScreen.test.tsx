@@ -15,18 +15,13 @@ jest.mock('@/components/SwipeBackView', () => ({
 }));
 
 describe('QueuesScreen', () => {
-  it('renders first queue', () => {
+  it('renders first queue at the top', () => {
     render(<QueuesScreen />);
-    expect(screen.getByTestId('queue-item-0')).toHaveTextContent('first queue');
+    expect(screen.getByTestId('queue-heading')).toHaveTextContent('first queue');
   });
 
-  it('renders second queue', () => {
+  it('does not render a list of queues', () => {
     render(<QueuesScreen />);
-    expect(screen.getByTestId('queue-item-1')).toHaveTextContent('second queue');
-  });
-
-  it('renders third queue', () => {
-    render(<QueuesScreen />);
-    expect(screen.getByTestId('queue-item-2')).toHaveTextContent('third queue');
+    expect(screen.queryByTestId('queue-item-1')).toBeNull();
   });
 });

@@ -1,9 +1,7 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { SwipeBackView } from '@/components/SwipeBackView';
-
-const ORDINALS = ['first', 'second', 'third', 'fourth', 'fifth'];
 
 export default function QueuesScreen() {
   const router = useRouter();
@@ -11,13 +9,9 @@ export default function QueuesScreen() {
   return (
     <SwipeBackView onSwipeRight={() => router.back()}>
       <SafeAreaView style={styles.safeArea}>
-        <View style={styles.list}>
-          {ORDINALS.map((ordinal, index) => (
-            <Text key={ordinal} testID={`queue-item-${index}`} style={styles.item}>
-              {ordinal} queue
-            </Text>
-          ))}
-        </View>
+        <Text testID="queue-heading" style={styles.heading}>
+          first queue
+        </Text>
       </SafeAreaView>
     </SwipeBackView>
   );
@@ -26,13 +20,9 @@ export default function QueuesScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-  },
-  list: {
-    flex: 1,
-    justifyContent: 'space-evenly',
     paddingHorizontal: 24,
   },
-  item: {
+  heading: {
     fontSize: 24,
     fontFamily: 'JetBrainsMono_400Regular',
     color: '#ffffff',
