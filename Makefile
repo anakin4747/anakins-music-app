@@ -7,7 +7,7 @@ test\:e2e: node_modules
 	npm run test:e2e
 
 server: node_modules
-	npm start
+	npm run start:dev
 
 node_modules: package.json
 	npm install
