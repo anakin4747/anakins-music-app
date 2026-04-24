@@ -1,9 +1,11 @@
-import { getAlbums, getPlaylists } from '../navidrome';
+import { getAlbums, getPlaylists, getAlbum, getPlaylist } from '../navidrome';
 
 jest.mock('subsonic-api', () => {
   return jest.fn().mockImplementation(() => ({
     getAlbumList2: jest.fn(),
     getPlaylists: jest.fn(),
+    getAlbum: jest.fn(),
+    getPlaylist: jest.fn(),
   }));
 });
 
@@ -16,6 +18,14 @@ function mockGetAlbumList2(impl: () => Promise<unknown>) {
 
 function mockGetPlaylists(impl: () => Promise<unknown>) {
   MockSubsonicAPI.mockImplementation(() => ({ getPlaylists: impl } as never));
+}
+
+function mockGetAlbum(impl: () => Promise<unknown>) {
+  MockSubsonicAPI.mockImplementation(() => ({ getAlbum: impl } as never));
+}
+
+function mockGetPlaylist(impl: () => Promise<unknown>) {
+  MockSubsonicAPI.mockImplementation(() => ({ getPlaylist: impl } as never));
 }
 
 beforeEach(() => {
@@ -100,6 +110,82 @@ describe('getPlaylists', () => {
       throw err;
     });
     const result = await getPlaylists('http://localhost:9', 'admin', 'admin');
+    expect(result).toEqual({ ok: false, error: 'unreachable' });
+  });
+});
+
+describe('getAlbum', () => {
+  it('returns album and songs on success', async () => {
+    mockGetAlbum(async () => ({
+      album: {
+        id: '1', name: 'Abbey Road', artist: 'Beatles',
+        song: [{ id: 's1', title: 'Come Together', artist: 'Beatles', track: 1 }],
+      },
+    }));
+    const result = await getAlbum('http://localhost:4534', 'admin', 'admin', '1');
+    expect(result).toEqual({
+      ok: true,
+      album: { id: '1', name: 'Abbey Road', artist: 'Beatles' },
+      songs: [{ id: 's1', title: 'Come Together', artist: 'Beatles', track: 1 }],
+    });
+  });
+
+  it('returns empty songs array when album has no songs', async () => {
+    mockGetAlbum(async () => ({ album: { id: '1', name: 'Empty', artist: 'Nobody' } }));
+    const result = await getAlbum('http://localhost:4534', 'admin', 'admin', '1');
+    expect(result).toEqual({ ok: true, album: { id: '1', name: 'Empty', artist: 'Nobody' }, songs: [] });
+  });
+
+  it('returns invalid-url for a malformed url', async () => {
+    const result = await getAlbum('not a url', 'admin', 'admin', '1');
+    expect(result).toEqual({ ok: false, error: 'invalid-url' });
+  });
+
+  it('returns unreachable when connection is refused', async () => {
+    mockGetAlbum(async () => {
+      const err = new Error('fetch failed');
+      (err as NodeJS.ErrnoException & { cause: Error }).cause = Object.assign(new Error('ECONNREFUSED'), { code: 'ECONNREFUSED' });
+      throw err;
+    });
+    const result = await getAlbum('http://localhost:9', 'admin', 'admin', '1');
+    expect(result).toEqual({ ok: false, error: 'unreachable' });
+  });
+});
+
+describe('getPlaylist', () => {
+  it('returns playlist and songs on success', async () => {
+    mockGetPlaylist(async () => ({
+      playlist: {
+        id: '1', name: 'My Mix',
+        entry: [{ id: 's1', title: 'Come Together', artist: 'Beatles', track: 1 }],
+      },
+    }));
+    const result = await getPlaylist('http://localhost:4534', 'admin', 'admin', '1');
+    expect(result).toEqual({
+      ok: true,
+      playlist: { id: '1', name: 'My Mix' },
+      songs: [{ id: 's1', title: 'Come Together', artist: 'Beatles', track: 1 }],
+    });
+  });
+
+  it('returns empty songs array when playlist has no entries', async () => {
+    mockGetPlaylist(async () => ({ playlist: { id: '1', name: 'Empty' } }));
+    const result = await getPlaylist('http://localhost:4534', 'admin', 'admin', '1');
+    expect(result).toEqual({ ok: true, playlist: { id: '1', name: 'Empty' }, songs: [] });
+  });
+
+  it('returns invalid-url for a malformed url', async () => {
+    const result = await getPlaylist('not a url', 'admin', 'admin', '1');
+    expect(result).toEqual({ ok: false, error: 'invalid-url' });
+  });
+
+  it('returns unreachable when connection is refused', async () => {
+    mockGetPlaylist(async () => {
+      const err = new Error('fetch failed');
+      (err as NodeJS.ErrnoException & { cause: Error }).cause = Object.assign(new Error('ECONNREFUSED'), { code: 'ECONNREFUSED' });
+      throw err;
+    });
+    const result = await getPlaylist('http://localhost:9', 'admin', 'admin', '1');
     expect(result).toEqual({ ok: false, error: 'unreachable' });
   });
 });

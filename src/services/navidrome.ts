@@ -12,9 +12,12 @@ export type FetchError = 'invalid-url' | 'server-not-found' | 'unreachable';
 
 export interface AlbumItem { id: string; name: string; artist: string }
 export interface PlaylistItem { id: string; name: string }
+export interface SongItem { id: string; title: string; artist: string; track: number }
 
 export type AlbumsResult = { ok: true; albums: AlbumItem[] } | { ok: false; error: FetchError };
 export type PlaylistsResult = { ok: true; playlists: PlaylistItem[] } | { ok: false; error: FetchError };
+export type AlbumDetailResult = { ok: true; album: AlbumItem; songs: SongItem[] } | { ok: false; error: FetchError };
+export type PlaylistDetailResult = { ok: true; playlist: PlaylistItem; songs: SongItem[] } | { ok: false; error: FetchError };
 
 function isValidUrl(url: string): boolean {
   try { new URL(url); return true; } catch { return false; }
@@ -86,6 +89,32 @@ export async function getPlaylists(url: string, username: string, password: stri
     const res = await api.getPlaylists({});
     const playlists = (res as { playlists: { playlist?: PlaylistItem[] } }).playlists?.playlist ?? [];
     return { ok: true, playlists };
+  } catch (err) {
+    return { ok: false, error: classifyNetworkError(err) };
+  }
+}
+
+export async function getAlbum(url: string, username: string, password: string, id: string): Promise<AlbumDetailResult> {
+  if (!isValidUrl(url)) return { ok: false, error: 'invalid-url' };
+
+  try {
+    const api = makeApi(url, username, password);
+    const res = await (api as unknown as { getAlbum: (p: { id: string }) => Promise<{ album: AlbumItem & { song?: SongItem[] } }> }).getAlbum({ id });
+    const { song: songs = [], ...albumFields } = res.album;
+    return { ok: true, album: albumFields as AlbumItem, songs };
+  } catch (err) {
+    return { ok: false, error: classifyNetworkError(err) };
+  }
+}
+
+export async function getPlaylist(url: string, username: string, password: string, id: string): Promise<PlaylistDetailResult> {
+  if (!isValidUrl(url)) return { ok: false, error: 'invalid-url' };
+
+  try {
+    const api = makeApi(url, username, password);
+    const res = await (api as unknown as { getPlaylist: (p: { id: string }) => Promise<{ playlist: PlaylistItem & { entry?: SongItem[] } }> }).getPlaylist({ id });
+    const { entry: songs = [], ...playlistFields } = res.playlist;
+    return { ok: true, playlist: playlistFields as PlaylistItem, songs };
   } catch (err) {
     return { ok: false, error: classifyNetworkError(err) };
   }
