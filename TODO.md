@@ -27,3 +27,24 @@ servers should also navigate to those screens
 
 All the other server screens should save their own server configurations and
 not reuse the ones from the other server screens
+
+---
+
+plan nested playlist support — a playlist type that can contain other playlists,
+whole albums, and individual songs, without flattening albums or child playlists
+into their constituent tracks.
+
+the subsonic API has no concept of nested playlists or album-as-playlist-item.
+investigate whether this requires forking navidrome (or contributing upstream)
+to extend the API, or whether it can be modelled client-side by convention
+(e.g. a playlist whose name starts with "@album:" is treated as an album
+reference). document the options and tradeoffs before writing any code.
+
+---
+
+swiping right-to-left on an album or playlist row should open that item,
+matching the behaviour already in place via the SwipeOpenView component.
+currently the swipe gesture navigates to the detail screen but the row does
+not give any visual affordance that a swipe occurred. investigate whether the
+issue is in the gesture threshold, the navigation call, or the absence of
+visual feedback, and fix accordingly.
