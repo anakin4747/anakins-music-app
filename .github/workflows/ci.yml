@@ -38,6 +38,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: DeterminateSystems/nix-installer-action@v14
+
+      - uses: DeterminateSystems/magic-nix-cache-action@v8
+
       - uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -54,6 +58,9 @@ jobs:
 
       - name: Test
         run: npm test
+
+      - name: E2E Test
+        run: nix develop --command npm run test:e2e
 
       - name: Audit dependencies
         run: npm audit --audit-level=high
