@@ -3,6 +3,7 @@ import { Pressable, ScrollView, StyleSheet, Text } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { SwipeBackView } from '@/components/SwipeBackView';
+import { SwipeOpenView } from '@/components/SwipeOpenView';
 import { getAlbums, AlbumItem, FetchError } from '@/services/navidrome';
 import { getLastPingedServerConfig } from '@/stores/serverConfigs';
 
@@ -54,10 +55,12 @@ export default function AlbumsScreen() {
           )}
 
           {state.phase === 'done' && state.albums.map((album) => (
-            <Pressable key={album.id} testID="album-row" style={styles.row} onPress={() => router.push(`/album/${album.id}`)}>
-              <Text style={styles.rowText}>{album.name}</Text>
-              <Text style={styles.rowText}>{album.artist}</Text>
-            </Pressable>
+            <SwipeOpenView key={album.id} style={styles.row} onSwipeLeft={() => router.push(`/album/${album.id}`)}>
+              <Pressable testID="album-row" onPress={() => router.push(`/album/${album.id}`)}>
+                <Text style={styles.rowText}>{album.name}</Text>
+                <Text style={styles.rowText}>{album.artist}</Text>
+              </Pressable>
+            </SwipeOpenView>
           ))}
         </ScrollView>
       </SafeAreaView>

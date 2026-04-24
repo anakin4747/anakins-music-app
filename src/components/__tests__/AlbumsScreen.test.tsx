@@ -17,6 +17,17 @@ jest.mock('@/components/SwipeBackView', () => ({
   SwipeBackView: ({ children }: { children: React.ReactNode }) => children,
 }));
 
+jest.mock('@/components/SwipeOpenView', () => ({
+  SwipeOpenView: ({ children, onSwipeLeft, style }: { children: React.ReactNode; onSwipeLeft: () => void; style?: object }) => {
+    const { Pressable } = require('react-native');
+    return (
+      <Pressable testID="swipe-open-view" onPress={onSwipeLeft} style={style}>
+        {children}
+      </Pressable>
+    );
+  },
+}));
+
 jest.mock('@/services/navidrome', () => ({
   getAlbums: jest.fn(),
 }));
@@ -109,6 +120,19 @@ describe('AlbumsScreen', () => {
     render(<AlbumsScreen />);
     await act(async () => {});
     fireEvent.press(screen.getByTestId('album-row'));
+    expect(mockPush).toHaveBeenCalledWith('/album/abc');
+  });
+
+  it('swiping left on an album row navigates to its detail screen', async () => {
+    setServerConfig(1, { url: 'http://s', usr: 'u', passwd: 'p' });
+    setLastPingedServerIndex(1);
+    mockGetAlbums.mockResolvedValue({
+      ok: true,
+      albums: [{ id: 'abc', name: 'Abbey Road', artist: 'Beatles' }],
+    });
+    render(<AlbumsScreen />);
+    await act(async () => {});
+    fireEvent.press(screen.getByTestId('swipe-open-view'));
     expect(mockPush).toHaveBeenCalledWith('/album/abc');
   });
 });

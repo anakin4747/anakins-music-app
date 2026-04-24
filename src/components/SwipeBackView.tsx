@@ -12,8 +12,7 @@ interface SwipeBackViewProps {
 export function SwipeBackView({ onSwipeRight, onSwipeLeft, children }: SwipeBackViewProps) {
   const panResponder = useRef(
     PanResponder.create({
-      onStartShouldSetPanResponder: () => true,
-      onMoveShouldSetPanResponder: () => true,
+      onMoveShouldSetPanResponder: (_evt, { dx, dy }) => Math.abs(dx) > Math.abs(dy),
       onPanResponderRelease: (_evt, gestureState) => {
         if (gestureState.dx > SWIPE_THRESHOLD) {
           onSwipeRight();

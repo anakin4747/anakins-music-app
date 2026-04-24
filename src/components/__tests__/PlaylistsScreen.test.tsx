@@ -17,6 +17,17 @@ jest.mock('@/components/SwipeBackView', () => ({
   SwipeBackView: ({ children }: { children: React.ReactNode }) => children,
 }));
 
+jest.mock('@/components/SwipeOpenView', () => ({
+  SwipeOpenView: ({ children, onSwipeLeft, style }: { children: React.ReactNode; onSwipeLeft: () => void; style?: object }) => {
+    const { Pressable } = require('react-native');
+    return (
+      <Pressable testID="swipe-open-view" onPress={onSwipeLeft} style={style}>
+        {children}
+      </Pressable>
+    );
+  },
+}));
+
 jest.mock('@/services/navidrome', () => ({
   getPlaylists: jest.fn(),
 }));
@@ -107,6 +118,19 @@ describe('PlaylistsScreen', () => {
     render(<PlaylistsScreen />);
     await act(async () => {});
     fireEvent.press(screen.getByTestId('playlist-row'));
+    expect(mockPush).toHaveBeenCalledWith('/playlist/xyz');
+  });
+
+  it('swiping left on a playlist row navigates to its detail screen', async () => {
+    setServerConfig(1, { url: 'http://s', usr: 'u', passwd: 'p' });
+    setLastPingedServerIndex(1);
+    mockGetPlaylists.mockResolvedValue({
+      ok: true,
+      playlists: [{ id: 'xyz', name: 'My Mix' }],
+    });
+    render(<PlaylistsScreen />);
+    await act(async () => {});
+    fireEvent.press(screen.getByTestId('swipe-open-view'));
     expect(mockPush).toHaveBeenCalledWith('/playlist/xyz');
   });
 });

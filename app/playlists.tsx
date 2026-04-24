@@ -3,6 +3,7 @@ import { Pressable, ScrollView, StyleSheet, Text } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { SwipeBackView } from '@/components/SwipeBackView';
+import { SwipeOpenView } from '@/components/SwipeOpenView';
 import { getPlaylists, PlaylistItem, FetchError } from '@/services/navidrome';
 import { getLastPingedServerConfig } from '@/stores/serverConfigs';
 
@@ -54,9 +55,11 @@ export default function PlaylistsScreen() {
           )}
 
           {state.phase === 'done' && state.playlists.map((playlist) => (
-            <Pressable key={playlist.id} testID="playlist-row" style={styles.row} onPress={() => router.push(`/playlist/${playlist.id}`)}>
-              <Text style={styles.rowText}>{playlist.name}</Text>
-            </Pressable>
+            <SwipeOpenView key={playlist.id} style={styles.row} onSwipeLeft={() => router.push(`/playlist/${playlist.id}`)}>
+              <Pressable testID="playlist-row" onPress={() => router.push(`/playlist/${playlist.id}`)}>
+                <Text style={styles.rowText}>{playlist.name}</Text>
+              </Pressable>
+            </SwipeOpenView>
           ))}
         </ScrollView>
       </SafeAreaView>
