@@ -59,4 +59,37 @@ describe('SwipeBackView', () => {
     capturedConfig.onPanResponderRelease?.({} as any, { dx: -80 } as any);
     expect(onSwipeRight).not.toHaveBeenCalled();
   });
+
+  it('calls onSwipeLeft when swiped left past threshold', () => {
+    const onSwipeLeft = jest.fn();
+    render(
+      <SwipeBackView onSwipeRight={jest.fn()} onSwipeLeft={onSwipeLeft}>
+        <Text>content</Text>
+      </SwipeBackView>
+    );
+    capturedConfig.onPanResponderRelease?.({} as any, { dx: -80 } as any);
+    expect(onSwipeLeft).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not call onSwipeLeft when swipe is too short', () => {
+    const onSwipeLeft = jest.fn();
+    render(
+      <SwipeBackView onSwipeRight={jest.fn()} onSwipeLeft={onSwipeLeft}>
+        <Text>content</Text>
+      </SwipeBackView>
+    );
+    capturedConfig.onPanResponderRelease?.({} as any, { dx: -20 } as any);
+    expect(onSwipeLeft).not.toHaveBeenCalled();
+  });
+
+  it('does not call onSwipeLeft when swiped right', () => {
+    const onSwipeLeft = jest.fn();
+    render(
+      <SwipeBackView onSwipeRight={jest.fn()} onSwipeLeft={onSwipeLeft}>
+        <Text>content</Text>
+      </SwipeBackView>
+    );
+    capturedConfig.onPanResponderRelease?.({} as any, { dx: 80 } as any);
+    expect(onSwipeLeft).not.toHaveBeenCalled();
+  });
 });
