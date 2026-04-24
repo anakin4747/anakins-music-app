@@ -15,9 +15,15 @@ export function MainMenu() {
   return (
     <View style={styles.container}>
       {ITEMS.map(({ label, route }) => (
-        <Pressable key={label} testID={`menu-item-${label}`} onPress={() => router.push(route)} style={styles.pressable}>
-          <Text style={styles.item}>{label}</Text>
-        </Pressable>
+        <Pressable
+            key={label}
+            testID={`menu-item-${label}`}
+            onPress={() => router.push(route)}
+            style={styles.pressable}
+            hitSlop={{ top: 200, bottom: 200, left: 0, right: 500 }}
+          >
+            <Text style={styles.item}>{label}</Text>
+          </Pressable>
       ))}
     </View>
   );
