@@ -3,15 +3,24 @@ import { render, screen, fireEvent, act } from '@testing-library/react-native';
 import ServersScreen from '../../../app/servers';
 
 jest.mock('expo-router', () => ({
-  useRouter: () => ({ back: jest.fn() }),
+  useRouter: () => ({ back: jest.fn(), push: mockPush }),
+  useLocalSearchParams: () => mockParams,
 }));
+
+const mockPush = jest.fn();
+let mockParams: Record<string, string> = {};
 
 jest.mock('react-native-safe-area-context', () => ({
   SafeAreaView: ({ children }: { children: React.ReactNode }) => children,
 }));
 
+let capturedOnSwipeLeft: (() => void) | undefined;
+
 jest.mock('@/components/SwipeBackView', () => ({
-  SwipeBackView: ({ children }: { children: React.ReactNode }) => children,
+  SwipeBackView: ({ children, onSwipeLeft }: { children: React.ReactNode; onSwipeLeft?: () => void }) => {
+    capturedOnSwipeLeft = onSwipeLeft;
+    return children;
+  },
 }));
 
 jest.mock('@/services/navidrome', () => ({
@@ -22,6 +31,12 @@ import { ping } from '@/services/navidrome';
 const mockPing = ping as jest.MockedFunction<typeof ping>;
 
 describe('ServersScreen', () => {
+  beforeEach(() => {
+    mockParams = {};
+    mockPush.mockClear();
+    capturedOnSwipeLeft = undefined;
+  });
+
   it('renders first server at the top', () => {
     render(<ServersScreen />);
     expect(screen.getByTestId('server-heading')).toHaveTextContent('first server');
@@ -193,5 +208,38 @@ describe('ServersScreen', () => {
     render(<ServersScreen />);
     const scrollView = screen.getByTestId('server-scroll-view');
     expect(scrollView.props.keyboardShouldPersistTaps).toBe('handled');
+  });
+
+  it('does not constrain inner content to the scroll view height so the log can scroll', () => {
+    render(<ServersScreen />);
+    const scrollView = screen.getByTestId('server-scroll-view');
+    expect(scrollView.props.contentContainerStyle).not.toMatchObject({ flex: 1 });
+  });
+
+  describe('index param', () => {
+    it('shows second server when index is 2', () => {
+      mockParams = { index: '2' };
+      render(<ServersScreen />);
+      expect(screen.getByTestId('server-heading')).toHaveTextContent('second server');
+    });
+
+    it('shows third server when index is 3', () => {
+      mockParams = { index: '3' };
+      render(<ServersScreen />);
+      expect(screen.getByTestId('server-heading')).toHaveTextContent('third server');
+    });
+
+    it('swipe left pushes to the next server index', () => {
+      mockParams = { index: '2' };
+      render(<ServersScreen />);
+      capturedOnSwipeLeft?.();
+      expect(mockPush).toHaveBeenCalledWith({ pathname: '/servers', params: { index: 3 } });
+    });
+
+    it('swipe left from first server pushes to second server', () => {
+      render(<ServersScreen />);
+      capturedOnSwipeLeft?.();
+      expect(mockPush).toHaveBeenCalledWith({ pathname: '/servers', params: { index: 2 } });
+    });
   });
 });
