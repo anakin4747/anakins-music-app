@@ -20,7 +20,7 @@ export function MainMenu() {
             testID={`menu-item-${label}`}
             onPress={() => router.push(route)}
             style={styles.pressable}
-            hitSlop={{ top: 200, bottom: 200, left: 0, right: 500 }}
+            hitSlop={{ top: 200, bottom: 200 }}
           >
             <Text style={styles.item}>{label}</Text>
           </Pressable>
@@ -33,7 +33,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'space-evenly',
-    alignItems: 'flex-start',
     paddingHorizontal: 24,
   },
   item: {
