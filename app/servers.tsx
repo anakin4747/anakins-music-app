@@ -59,58 +59,58 @@ export default function ServersScreen() {
           keyboardShouldPersistTaps="handled"
           contentContainerStyle={styles.inner}
         >
-            <Text testID="server-heading" style={styles.heading}>
-              first server
-            </Text>
+          <Text testID="server-heading" style={styles.heading}>
+            first server
+          </Text>
 
-            <View style={styles.field}>
-              <Text testID="server-url-label" style={styles.label}>url</Text>
-              <TextInput
-                testID="server-url-input"
-                style={styles.input}
-                autoCapitalize="none"
-                keyboardType="url"
-                placeholderTextColor="#555555"
-                value={url}
-                onChangeText={handleUrlChange}
-              />
+          <View style={styles.field}>
+            <Text testID="server-url-label" style={styles.label}>url</Text>
+            <TextInput
+              testID="server-url-input"
+              style={styles.input}
+              autoCapitalize="none"
+              keyboardType="url"
+              placeholderTextColor="#555555"
+              value={url}
+              onChangeText={handleUrlChange}
+            />
+          </View>
+
+          <View style={styles.field}>
+            <Text testID="server-usr-label" style={styles.label}>usr</Text>
+            <TextInput
+              testID="server-usr-input"
+              style={styles.input}
+              autoCapitalize="none"
+              placeholderTextColor="#555555"
+              value={usr}
+              onChangeText={handleUsrChange}
+            />
+          </View>
+
+          <View style={styles.field}>
+            <Text testID="server-passwd-label" style={styles.label}>passwd</Text>
+            <TextInput
+              testID="server-passwd-input"
+              style={styles.input}
+              secureTextEntry
+              placeholderTextColor="#555555"
+              value={passwd}
+              onChangeText={handlePasswdChange}
+            />
+          </View>
+
+          <Pressable testID="server-ping-button" style={styles.field} onPress={handlePing}>
+            <Text style={styles.label}>ping</Text>
+          </Pressable>
+
+          {log.length > 0 && (
+            <View testID="server-log" style={styles.field}>
+              {log.map((line, i) => (
+                <Text key={i} style={styles.label}>{line}</Text>
+              ))}
             </View>
-
-            <View style={styles.field}>
-              <Text testID="server-usr-label" style={styles.label}>usr</Text>
-              <TextInput
-                testID="server-usr-input"
-                style={styles.input}
-                autoCapitalize="none"
-                placeholderTextColor="#555555"
-                value={usr}
-                onChangeText={handleUsrChange}
-              />
-            </View>
-
-            <View style={styles.field}>
-              <Text testID="server-passwd-label" style={styles.label}>passwd</Text>
-              <TextInput
-                testID="server-passwd-input"
-                style={styles.input}
-                secureTextEntry
-                placeholderTextColor="#555555"
-                value={passwd}
-                onChangeText={handlePasswdChange}
-              />
-            </View>
-
-            <Pressable testID="server-ping-button" style={styles.field} onPress={handlePing}>
-              <Text style={styles.label}>ping</Text>
-            </Pressable>
-
-            {log.length > 0 && (
-              <View testID="server-log" style={styles.field}>
-                {log.map((line, i) => (
-                  <Text key={i} style={styles.label}>{line}</Text>
-                ))}
-              </View>
-            )}
+          )}
         </ScrollView>
       </SafeAreaView>
     </SwipeBackView>
