@@ -1,10 +1,55 @@
+import { useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { SwipeBackView } from '@/components/SwipeBackView';
+import { ping, PingResult } from '@/services/navidrome';
+
+// Persisted across navigations (stack unmounts the component on back).
+let persistedUrl = '';
+let persistedUsr = '';
+let persistedPasswd = '';
+
+const LOG_MESSAGES: Record<PingResult, string> = {
+  'ok': 'ping ok',
+  'wrong-credentials': 'wrong credentials',
+  'invalid-url': 'invalid url',
+  'server-not-found': 'server not found',
+  'unreachable': 'unreachable',
+  'timed-out': 'timed out',
+};
 
 export default function ServersScreen() {
   const router = useRouter();
+  const [url, setUrl] = useState(persistedUrl);
+  const [usr, setUsr] = useState(persistedUsr);
+  const [passwd, setPasswd] = useState(persistedPasswd);
+  const [log, setLog] = useState<string[]>([]);
+
+  function handleUrlChange(text: string) {
+    persistedUrl = text;
+    setUrl(text);
+  }
+
+  function handleUsrChange(text: string) {
+    persistedUsr = text;
+    setUsr(text);
+  }
+
+  function handlePasswdChange(text: string) {
+    persistedPasswd = text;
+    setPasswd(text);
+  }
+
+  async function handlePing() {
+    if (!url) { setLog(['url required']); return; }
+    if (!usr) { setLog(['usr required']); return; }
+    if (!passwd) { setLog(['passwd required']); return; }
+
+    setLog(['ping sent']);
+    const result = await ping(url, usr, passwd);
+    setLog([LOG_MESSAGES[result]]);
+  }
 
   return (
     <SwipeBackView onSwipeRight={() => router.back()}>
@@ -21,6 +66,8 @@ export default function ServersScreen() {
             autoCapitalize="none"
             keyboardType="url"
             placeholderTextColor="#555555"
+            value={url}
+            onChangeText={handleUrlChange}
           />
         </View>
 
@@ -31,6 +78,8 @@ export default function ServersScreen() {
             style={styles.input}
             autoCapitalize="none"
             placeholderTextColor="#555555"
+            value={usr}
+            onChangeText={handleUsrChange}
           />
         </View>
 
@@ -41,12 +90,22 @@ export default function ServersScreen() {
             style={styles.input}
             secureTextEntry
             placeholderTextColor="#555555"
+            value={passwd}
+            onChangeText={handlePasswdChange}
           />
         </View>
 
-        <Pressable testID="server-ping-button" style={styles.field}>
+        <Pressable testID="server-ping-button" style={styles.field} onPress={handlePing}>
           <Text style={styles.label}>ping</Text>
         </Pressable>
+
+        {log.length > 0 && (
+          <View testID="server-log" style={styles.field}>
+            {log.map((line, i) => (
+              <Text key={i} style={styles.label}>{line}</Text>
+            ))}
+          </View>
+        )}
       </SafeAreaView>
     </SwipeBackView>
   );

@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react-native';
+import { render, screen, fireEvent, act } from '@testing-library/react-native';
 import ServersScreen from '../../../app/servers';
 
 jest.mock('expo-router', () => ({
@@ -13,6 +13,13 @@ jest.mock('react-native-safe-area-context', () => ({
 jest.mock('@/components/SwipeBackView', () => ({
   SwipeBackView: ({ children }: { children: React.ReactNode }) => children,
 }));
+
+jest.mock('@/services/navidrome', () => ({
+  ping: jest.fn(),
+}));
+
+import { ping } from '@/services/navidrome';
+const mockPing = ping as jest.MockedFunction<typeof ping>;
 
 describe('ServersScreen', () => {
   it('renders first server at the top', () => {
@@ -58,5 +65,94 @@ describe('ServersScreen', () => {
   it('renders the ping button', () => {
     render(<ServersScreen />);
     expect(screen.getByTestId('server-ping-button')).toHaveTextContent('ping');
+  });
+
+  describe('ping button validation', () => {
+    it('shows url required when url is empty', async () => {
+      render(<ServersScreen />);
+      await act(async () => { fireEvent.press(screen.getByTestId('server-ping-button')); });
+      expect(screen.getByTestId('server-log')).toHaveTextContent('url required');
+    });
+
+    it('shows usr required when usr is empty', async () => {
+      render(<ServersScreen />);
+      fireEvent.changeText(screen.getByTestId('server-url-input'), 'http://localhost:4534');
+      await act(async () => { fireEvent.press(screen.getByTestId('server-ping-button')); });
+      expect(screen.getByTestId('server-log')).toHaveTextContent('usr required');
+    });
+
+    it('shows passwd required when passwd is empty', async () => {
+      render(<ServersScreen />);
+      fireEvent.changeText(screen.getByTestId('server-url-input'), 'http://localhost:4534');
+      fireEvent.changeText(screen.getByTestId('server-usr-input'), 'admin');
+      await act(async () => { fireEvent.press(screen.getByTestId('server-ping-button')); });
+      expect(screen.getByTestId('server-log')).toHaveTextContent('passwd required');
+    });
+  });
+
+  describe('ping button results', () => {
+    function fillForm() {
+      fireEvent.changeText(screen.getByTestId('server-url-input'), 'http://localhost:4534');
+      fireEvent.changeText(screen.getByTestId('server-usr-input'), 'admin');
+      fireEvent.changeText(screen.getByTestId('server-passwd-input'), 'admin');
+    }
+
+    it('shows ping sent immediately when button pressed', async () => {
+      let resolvePing!: (v: 'ok') => void;
+      mockPing.mockReturnValue(new Promise((r) => { resolvePing = r; }));
+      render(<ServersScreen />);
+      fillForm();
+      act(() => { fireEvent.press(screen.getByTestId('server-ping-button')); });
+      expect(screen.getByTestId('server-log')).toHaveTextContent('ping sent');
+      await act(async () => { resolvePing('ok'); });
+    });
+
+    it('shows ping ok when ping returns ok', async () => {
+      mockPing.mockResolvedValue('ok');
+      render(<ServersScreen />);
+      fillForm();
+      await act(async () => { fireEvent.press(screen.getByTestId('server-ping-button')); });
+      expect(screen.getByTestId('server-log')).toHaveTextContent('ping ok');
+    });
+
+    it('shows wrong credentials when ping returns wrong-credentials', async () => {
+      mockPing.mockResolvedValue('wrong-credentials');
+      render(<ServersScreen />);
+      fillForm();
+      await act(async () => { fireEvent.press(screen.getByTestId('server-ping-button')); });
+      expect(screen.getByTestId('server-log')).toHaveTextContent('wrong credentials');
+    });
+
+    it('shows invalid url when ping returns invalid-url', async () => {
+      mockPing.mockResolvedValue('invalid-url');
+      render(<ServersScreen />);
+      fillForm();
+      await act(async () => { fireEvent.press(screen.getByTestId('server-ping-button')); });
+      expect(screen.getByTestId('server-log')).toHaveTextContent('invalid url');
+    });
+
+    it('shows server not found when ping returns server-not-found', async () => {
+      mockPing.mockResolvedValue('server-not-found');
+      render(<ServersScreen />);
+      fillForm();
+      await act(async () => { fireEvent.press(screen.getByTestId('server-ping-button')); });
+      expect(screen.getByTestId('server-log')).toHaveTextContent('server not found');
+    });
+
+    it('shows unreachable when ping returns unreachable', async () => {
+      mockPing.mockResolvedValue('unreachable');
+      render(<ServersScreen />);
+      fillForm();
+      await act(async () => { fireEvent.press(screen.getByTestId('server-ping-button')); });
+      expect(screen.getByTestId('server-log')).toHaveTextContent('unreachable');
+    });
+
+    it('shows timed out when ping returns timed-out', async () => {
+      mockPing.mockResolvedValue('timed-out');
+      render(<ServersScreen />);
+      fillForm();
+      await act(async () => { fireEvent.press(screen.getByTestId('server-ping-button')); });
+      expect(screen.getByTestId('server-log')).toHaveTextContent('timed out');
+    });
   });
 });
