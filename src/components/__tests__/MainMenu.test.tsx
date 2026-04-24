@@ -59,16 +59,16 @@ describe('MainMenu', () => {
     expect(mockPush).toHaveBeenCalledWith('/queues');
   });
 
-  it('does not navigate when playlists is pressed', () => {
+  it('navigates to /playlists when playlists is pressed', () => {
     render(<MainMenu />);
     fireEvent.press(screen.getByTestId('menu-item-playlists'));
-    expect(mockPush).not.toHaveBeenCalled();
+    expect(mockPush).toHaveBeenCalledWith('/playlists');
   });
 
-  it('does not navigate when albums is pressed', () => {
+  it('navigates to /albums when albums is pressed', () => {
     render(<MainMenu />);
     fireEvent.press(screen.getByTestId('menu-item-albums'));
-    expect(mockPush).not.toHaveBeenCalled();
+    expect(mockPush).toHaveBeenCalledWith('/albums');
   });
 
   it('navigates to /servers when servers is pressed', () => {
@@ -90,18 +90,17 @@ describe('MainMenu', () => {
       expect(mockPush).not.toHaveBeenCalled();
     });
 
-    it('does not navigate when playlists is swiped left', () => {
+    it('navigates to /playlists when playlists is swiped left', () => {
       render(<MainMenu />);
       capturedConfigs[1].onPanResponderRelease?.({} as any, SWIPE_LEFT as any);
-      expect(mockPush).not.toHaveBeenCalled();
+      expect(mockPush).toHaveBeenCalledWith('/playlists');
     });
 
-    it('does not navigate when albums is swiped left', () => {
+    it('navigates to /albums when albums is swiped left', () => {
       render(<MainMenu />);
       capturedConfigs[2].onPanResponderRelease?.({} as any, SWIPE_LEFT as any);
-      expect(mockPush).not.toHaveBeenCalled();
+      expect(mockPush).toHaveBeenCalledWith('/albums');
     });
-
     it('navigates to /servers when servers is swiped left', () => {
       render(<MainMenu />);
       capturedConfigs[3].onPanResponderRelease?.({} as any, SWIPE_LEFT as any);

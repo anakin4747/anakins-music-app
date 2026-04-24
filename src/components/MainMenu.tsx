@@ -6,8 +6,8 @@ type Route = '/queues' | '/playlists' | '/albums' | '/servers';
 
 const ITEMS: { label: string; route: Route; enabled: boolean }[] = [
   { label: 'queues', route: '/queues', enabled: true },
-  { label: 'playlists', route: '/playlists', enabled: false },
-  { label: 'albums', route: '/albums', enabled: false },
+  { label: 'playlists', route: '/playlists', enabled: true },
+  { label: 'albums', route: '/albums', enabled: true },
   { label: 'servers', route: '/servers', enabled: true },
 ];
 
