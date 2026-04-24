@@ -5,11 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { SwipeBackView } from '@/components/SwipeBackView';
 import { ping, PingResult } from '@/services/navidrome';
 import { toOrdinal } from '@/utils/ordinal';
-
-// Persisted across navigations (stack unmounts the component on back).
-let persistedUrl = '';
-let persistedUsr = '';
-let persistedPasswd = '';
+import { getServerConfig, setServerConfig } from '@/stores/serverConfigs';
 
 const LOG_MESSAGES: Record<PingResult, string> = {
   'ok': 'ping ok',
@@ -24,23 +20,24 @@ export default function ServersScreen() {
   const router = useRouter();
   const params = useLocalSearchParams();
   const index = Number(params.index ?? 1);
-  const [url, setUrl] = useState(persistedUrl);
-  const [usr, setUsr] = useState(persistedUsr);
-  const [passwd, setPasswd] = useState(persistedPasswd);
+  const stored = getServerConfig(index);
+  const [url, setUrl] = useState(stored.url);
+  const [usr, setUsr] = useState(stored.usr);
+  const [passwd, setPasswd] = useState(stored.passwd);
   const [log, setLog] = useState<string[]>([]);
 
   function handleUrlChange(text: string) {
-    persistedUrl = text;
+    setServerConfig(index, { url: text });
     setUrl(text);
   }
 
   function handleUsrChange(text: string) {
-    persistedUsr = text;
+    setServerConfig(index, { usr: text });
     setUsr(text);
   }
 
   function handlePasswdChange(text: string) {
-    persistedPasswd = text;
+    setServerConfig(index, { passwd: text });
     setPasswd(text);
   }
 

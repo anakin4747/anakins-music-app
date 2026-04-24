@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent, act } from '@testing-library/react-native';
 import ServersScreen from '../../../app/servers';
+import { resetServerConfigs } from '@/stores/serverConfigs';
 
 jest.mock('expo-router', () => ({
   useRouter: () => ({ back: jest.fn(), push: mockPush }),
@@ -35,6 +36,7 @@ describe('ServersScreen', () => {
     mockParams = {};
     mockPush.mockClear();
     capturedOnSwipeLeft = undefined;
+    resetServerConfigs();
   });
 
   it('renders first server at the top', () => {
@@ -240,6 +242,35 @@ describe('ServersScreen', () => {
       render(<ServersScreen />);
       capturedOnSwipeLeft?.();
       expect(mockPush).toHaveBeenCalledWith({ pathname: '/servers', params: { index: 2 } });
+    });
+  });
+
+  describe('per-screen config', () => {
+    it('server 1 and server 2 have independent url fields', () => {
+      mockParams = { index: '1' };
+      const { unmount } = render(<ServersScreen />);
+      fireEvent.changeText(screen.getByTestId('server-url-input'), 'http://one');
+      unmount();
+
+      mockParams = { index: '2' };
+      render(<ServersScreen />);
+      expect(screen.getByTestId('server-url-input').props.value).toBe('');
+    });
+
+    it('server 1 retains its config after visiting server 2', () => {
+      mockParams = { index: '1' };
+      const { unmount: unmount1 } = render(<ServersScreen />);
+      fireEvent.changeText(screen.getByTestId('server-url-input'), 'http://one');
+      unmount1();
+
+      mockParams = { index: '2' };
+      const { unmount: unmount2 } = render(<ServersScreen />);
+      fireEvent.changeText(screen.getByTestId('server-url-input'), 'http://two');
+      unmount2();
+
+      mockParams = { index: '1' };
+      render(<ServersScreen />);
+      expect(screen.getByTestId('server-url-input').props.value).toBe('http://one');
     });
   });
 });
