@@ -54,4 +54,9 @@ describe('ServersScreen', () => {
     render(<ServersScreen />);
     expect(screen.getByTestId('server-passwd-input')).toBeTruthy();
   });
+
+  it('renders the ping button', () => {
+    render(<ServersScreen />);
+    expect(screen.getByTestId('server-ping-button')).toHaveTextContent('ping');
+  });
 });

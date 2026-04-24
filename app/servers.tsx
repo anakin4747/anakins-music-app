@@ -1,4 +1,4 @@
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { SwipeBackView } from '@/components/SwipeBackView';
@@ -43,6 +43,10 @@ export default function ServersScreen() {
             placeholderTextColor="#555555"
           />
         </View>
+
+        <Pressable testID="server-ping-button" style={styles.field}>
+          <Text style={styles.label}>ping</Text>
+        </Pressable>
       </SafeAreaView>
     </SwipeBackView>
   );
