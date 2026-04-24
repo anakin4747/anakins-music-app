@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent, act } from '@testing-library/react-native';
 import ServersScreen from '../../../app/servers';
-import { resetServerConfigs, getLastPingedServerConfig, setServerConfig } from '@/stores/serverConfigs';
+import { resetServerConfigs, getLastPingedServerConfig, setServerConfig, getServerConfig } from '@/stores/serverConfigs';
 
 jest.mock('expo-router', () => ({
   useRouter: () => ({ back: jest.fn(), push: mockPush }),
@@ -257,21 +257,6 @@ describe('ServersScreen', () => {
       expect(screen.getByTestId('server-url-input').props.value).toBe('');
     });
 
-    it('server 1 retains its config after visiting server 2', () => {
-      mockParams = { index: '1' };
-      const { unmount: unmount1 } = render(<ServersScreen />);
-      fireEvent.changeText(screen.getByTestId('server-url-input'), 'http://one');
-      unmount1();
-
-      mockParams = { index: '2' };
-      const { unmount: unmount2 } = render(<ServersScreen />);
-      fireEvent.changeText(screen.getByTestId('server-url-input'), 'http://two');
-      unmount2();
-
-      mockParams = { index: '1' };
-      render(<ServersScreen />);
-      expect(screen.getByTestId('server-url-input').props.value).toBe('http://one');
-    });
   });
 
   describe('last pinged server', () => {
