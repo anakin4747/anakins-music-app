@@ -19,6 +19,13 @@
             nodejs_20
             git
           ];
+
+          shellHook = ''
+            echo ""
+            echo "  make        - run tests"
+            echo "  make server - start dev server"
+            echo ""
+          '';
         };
       });
 }

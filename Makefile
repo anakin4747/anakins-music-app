@@ -1,6 +1,9 @@
-.PHONY: start install
+.PHONY: test server install
 
-start: node_modules
+test: node_modules
+	npm test
+
+server: node_modules
 	npm start
 
 node_modules: package.json
