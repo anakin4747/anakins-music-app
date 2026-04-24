@@ -18,7 +18,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'space-evenly',
-    alignItems: 'center',
+    alignItems: 'flex-start',
+    paddingHorizontal: 24,
   },
   item: {
     fontSize: 24,
