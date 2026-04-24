@@ -27,3 +27,19 @@ servers should also navigate to those screens
 
 All the other server screens should save their own server configurations and
 not reuse the ones from the other server screens
+
+---
+
+figure out a way to preview pull requests in Expo Go on the phone directly
+from GitHub — ideally so that each PR triggers a shareable Expo preview URL
+that can be opened on device without having to run the dev server locally.
+
+options to investigate:
+  - Expo Application Services (EAS) Update + a GitHub Actions workflow that
+    publishes an EAS update channel per PR and posts the URL as a PR comment
+  - Expo's built-in GitHub integration (if the repo is linked to an EAS project)
+  - a self-hosted tunnel (e.g. ngrok or Cloudflare Tunnel) started by CI that
+    exposes the Metro bundler and posts the QR code as a PR comment
+
+goal: scan a QR code from a PR comment and immediately test the branch in
+Expo Go with no local setup required.
