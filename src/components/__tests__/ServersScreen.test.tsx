@@ -1,5 +1,4 @@
 import React from 'react';
-import { Keyboard } from 'react-native';
 import { render, screen, fireEvent, act } from '@testing-library/react-native';
 import ServersScreen from '../../../app/servers';
 
@@ -157,11 +156,9 @@ describe('ServersScreen', () => {
     });
   });
 
-  it('dismisses the keyboard when tapping outside the form', () => {
-    const dismissSpy = jest.spyOn(Keyboard, 'dismiss');
+  it('renders a scroll view that dismisses the keyboard on tap outside the form', () => {
     render(<ServersScreen />);
-    fireEvent.press(screen.getByTestId('server-dismiss-area'));
-    expect(dismissSpy).toHaveBeenCalled();
-    dismissSpy.mockRestore();
+    const scrollView = screen.getByTestId('server-scroll-view');
+    expect(scrollView.props.keyboardShouldPersistTaps).toBe('handled');
   });
 });
