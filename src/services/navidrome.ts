@@ -16,6 +16,10 @@ export interface PlaylistItem { id: string; name: string }
 export type AlbumsResult = { ok: true; albums: AlbumItem[] } | { ok: false; error: FetchError };
 export type PlaylistsResult = { ok: true; playlists: PlaylistItem[] } | { ok: false; error: FetchError };
 
+function isValidUrl(url: string): boolean {
+  try { new URL(url); return true; } catch { return false; }
+}
+
 function makeApi(url: string, username: string, password: string): SubsonicAPI {
   return new SubsonicAPI({
     url,
@@ -35,11 +39,7 @@ function classifyNetworkError(err: unknown): FetchError {
 }
 
 export async function ping(url: string, username: string, password: string): Promise<PingResult> {
-  try {
-    new URL(url);
-  } catch {
-    return 'invalid-url';
-  }
+  if (!isValidUrl(url)) return 'invalid-url';
 
   const api = makeApi(url, username, password);
 
@@ -72,11 +72,7 @@ export async function ping(url: string, username: string, password: string): Pro
 }
 
 export async function getAlbums(url: string, username: string, password: string): Promise<AlbumsResult> {
-  try {
-    new URL(url);
-  } catch {
-    return { ok: false, error: 'invalid-url' };
-  }
+  if (!isValidUrl(url)) return { ok: false, error: 'invalid-url' };
 
   try {
     const api = makeApi(url, username, password);
@@ -89,11 +85,7 @@ export async function getAlbums(url: string, username: string, password: string)
 }
 
 export async function getPlaylists(url: string, username: string, password: string): Promise<PlaylistsResult> {
-  try {
-    new URL(url);
-  } catch {
-    return { ok: false, error: 'invalid-url' };
-  }
+  if (!isValidUrl(url)) return { ok: false, error: 'invalid-url' };
 
   try {
     const api = makeApi(url, username, password);
