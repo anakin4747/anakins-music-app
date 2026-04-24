@@ -1,4 +1,5 @@
-import { Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { PanResponder, Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { useRef } from 'react';
 import { useRouter } from 'expo-router';
 
 type Route = '/queues' | '/playlists' | '/albums' | '/servers';
@@ -10,6 +11,41 @@ const ITEMS: { label: string; route: Route; enabled: boolean }[] = [
   { label: 'servers', route: '/servers', enabled: true },
 ];
 
+const SWIPE_THRESHOLD = 50;
+
+interface MenuItemProps {
+  label: string;
+  halfGap: number;
+  onNavigate?: () => void;
+}
+
+function MenuItem({ label, halfGap, onNavigate }: MenuItemProps) {
+  const panResponder = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: () => true,
+      onMoveShouldSetPanResponder: () => true,
+      onPanResponderRelease: (_evt, gestureState) => {
+        if (gestureState.dx < -SWIPE_THRESHOLD) {
+          onNavigate?.();
+        }
+      },
+    })
+  ).current;
+
+  return (
+    <View {...panResponder.panHandlers}>
+      <Pressable
+        testID={`menu-item-${label}`}
+        onPress={onNavigate}
+        style={styles.pressable}
+        hitSlop={{ top: halfGap, bottom: halfGap }}
+      >
+        <Text style={styles.item}>{label}</Text>
+      </Pressable>
+    </View>
+  );
+}
+
 export function MainMenu() {
   const router = useRouter();
   const { height } = useWindowDimensions();
@@ -18,15 +54,12 @@ export function MainMenu() {
   return (
     <View style={styles.container}>
       {ITEMS.map(({ label, route, enabled }) => (
-        <Pressable
+        <MenuItem
           key={label}
-          testID={`menu-item-${label}`}
-          onPress={enabled ? () => router.push(route) : undefined}
-          style={styles.pressable}
-          hitSlop={{ top: halfGap, bottom: halfGap }}
-        >
-          <Text style={styles.item}>{label}</Text>
-        </Pressable>
+          label={label}
+          halfGap={halfGap}
+          onNavigate={enabled ? () => router.push(route) : undefined}
+        />
       ))}
     </View>
   );
