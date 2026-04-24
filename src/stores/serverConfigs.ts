@@ -5,6 +5,7 @@ export interface ServerConfig {
 }
 
 const configs = new Map<number, ServerConfig>();
+let lastPingedIndex: number | null = null;
 
 export function getServerConfig(index: number): ServerConfig {
   return configs.get(index) ?? { url: '', usr: '', passwd: '' };
@@ -13,6 +14,15 @@ export function getServerConfig(index: number): ServerConfig {
 export function setServerConfig(index: number, config: Partial<ServerConfig>): void {
   const existing = getServerConfig(index);
   configs.set(index, { ...existing, ...config });
+}
+
+export function setLastPingedServerIndex(index: number): void {
+  lastPingedIndex = index;
+}
+
+export function getLastPingedServerConfig(): ServerConfig | null {
+  if (lastPingedIndex === null) return null;
+  return getServerConfig(lastPingedIndex);
 }
 
 export function compactServerConfigs(): void {
@@ -24,4 +34,5 @@ export function compactServerConfigs(): void {
 /** For use in tests only. */
 export function resetServerConfigs(): void {
   configs.clear();
+  lastPingedIndex = null;
 }

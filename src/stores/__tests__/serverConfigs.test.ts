@@ -3,6 +3,8 @@ import {
   setServerConfig,
   compactServerConfigs,
   resetServerConfigs,
+  setLastPingedServerIndex,
+  getLastPingedServerConfig,
 } from '../serverConfigs';
 
 beforeEach(() => {
@@ -58,5 +60,25 @@ describe('compactServerConfigs', () => {
     setServerConfig(1, { url: 'http://one', usr: 'u', passwd: 'p' });
     compactServerConfigs();
     expect(getServerConfig(1).url).toBe('http://one');
+  });
+});
+
+describe('lastPingedServerIndex', () => {
+  it('getLastPingedServerConfig returns null before any ping', () => {
+    expect(getLastPingedServerConfig()).toBeNull();
+  });
+
+  it('getLastPingedServerConfig returns the config for the last pinged index', () => {
+    setServerConfig(1, { url: 'http://one', usr: 'u1', passwd: 'p1' });
+    setLastPingedServerIndex(1);
+    expect(getLastPingedServerConfig()).toEqual({ url: 'http://one', usr: 'u1', passwd: 'p1' });
+  });
+
+  it('updates when a different index is pinged', () => {
+    setServerConfig(1, { url: 'http://one', usr: 'u1', passwd: 'p1' });
+    setServerConfig(2, { url: 'http://two', usr: 'u2', passwd: 'p2' });
+    setLastPingedServerIndex(1);
+    setLastPingedServerIndex(2);
+    expect(getLastPingedServerConfig()?.url).toBe('http://two');
   });
 });
