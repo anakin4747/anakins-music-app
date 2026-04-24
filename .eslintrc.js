@@ -1,5 +1,5 @@
 module.exports = {
-  extends: ['expo', 'expo/jest'],
+  extends: ['expo'],
   rules: {
     complexity: ['error', 10],
     'no-uppercase-jsx-text': 'error',
