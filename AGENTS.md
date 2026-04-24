@@ -49,6 +49,7 @@ assets/        images and fonts
 Always load and follow the TDD skill when writing or modifying code:
 
 - `.skills/tdd/SKILL.md` — test-driven development workflow (Red → Green → Refactor)
+- `.skills/atomic-commits/SKILL.md` — atomic git commit workflow and best practices
 
 ## Hot Reloading
 
