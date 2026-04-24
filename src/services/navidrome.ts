@@ -73,8 +73,16 @@ export async function getAlbums(url: string, username: string, password: string)
 
   try {
     const api = makeApi(url, username, password);
-    const res = await api.getAlbumList2({ type: 'alphabeticalByName', size: 500 });
-    const albums = (res as { albumList2: { album?: AlbumItem[] } }).albumList2?.album ?? [];
+    const PAGE = 500;
+    const albums: AlbumItem[] = [];
+    let offset = 0;
+    while (true) {
+      const res = await api.getAlbumList2({ type: 'alphabeticalByName', size: PAGE, offset });
+      const page = (res as { albumList2: { album?: AlbumItem[] } }).albumList2?.album ?? [];
+      albums.push(...page);
+      if (page.length < PAGE) break;
+      offset += PAGE;
+    }
     return { ok: true, albums };
   } catch (err) {
     return { ok: false, error: classifyNetworkError(err) };
