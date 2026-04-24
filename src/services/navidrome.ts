@@ -17,11 +17,17 @@ export async function ping(url: string, username: string, password: string): Pro
 
   const api = new SubsonicAPI({ url, auth: { username, password } });
 
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), 10_000);
+  let timer: ReturnType<typeof setTimeout>;
+  const timeoutPromise = new Promise<never>((_, reject) => {
+    timer = setTimeout(() => {
+      const err = new Error('timed out');
+      err.name = 'AbortError';
+      reject(err);
+    }, 10_000);
+  });
 
   try {
-    const res = await api.ping();
+    const res = await Promise.race([api.ping(), timeoutPromise]);
     if (res.status === 'ok') return 'ok';
     const code = (res as { error?: { code?: number } }).error?.code;
     if (code === 40 || code === 41) return 'wrong-credentials';
@@ -35,6 +41,6 @@ export async function ping(url: string, username: string, password: string): Pro
     }
     return 'unreachable';
   } finally {
-    clearTimeout(timer);
+    clearTimeout(timer!);
   }
 }
