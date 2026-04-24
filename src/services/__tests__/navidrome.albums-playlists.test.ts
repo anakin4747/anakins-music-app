@@ -189,3 +189,16 @@ describe('getPlaylist', () => {
     expect(result).toEqual({ ok: false, error: 'unreachable' });
   });
 });
+
+describe('getAlbums pagination', () => {
+  it('fetches all pages when library exceeds one page', async () => {
+    const page1 = Array.from({ length: 500 }, (_, i) => ({ id: String(i), name: `Album ${i}`, artist: 'A' }));
+    const page2 = [{ id: '500', name: 'Album 500', artist: 'A' }];
+    const impl = jest.fn()
+      .mockResolvedValueOnce({ albumList2: { album: page1 } })
+      .mockResolvedValueOnce({ albumList2: { album: page2 } });
+    MockSubsonicAPI.mockImplementation(() => ({ getAlbumList2: impl } as never));
+    const result = await getAlbums('http://localhost:4534', 'admin', 'admin');
+    expect(result).toEqual({ ok: true, albums: [...page1, ...page2] });
+  });
+});
