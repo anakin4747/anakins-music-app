@@ -1,10 +1,12 @@
 import React from 'react';
-import { render, screen, act } from '@testing-library/react-native';
+import { render, screen, act, fireEvent } from '@testing-library/react-native';
 import PlaylistsScreen from '../../../app/playlists';
 import { resetServerConfigs, setServerConfig, setLastPingedServerIndex } from '@/stores/serverConfigs';
 
+const mockPush = jest.fn();
+
 jest.mock('expo-router', () => ({
-  useRouter: () => ({ back: jest.fn() }),
+  useRouter: () => ({ back: jest.fn(), push: mockPush }),
 }));
 
 jest.mock('react-native-safe-area-context', () => ({
@@ -26,6 +28,7 @@ describe('PlaylistsScreen', () => {
   beforeEach(() => {
     resetServerConfigs();
     mockGetPlaylists.mockClear();
+    mockPush.mockClear();
   });
 
   it('renders the playlists heading', () => {
@@ -92,5 +95,18 @@ describe('PlaylistsScreen', () => {
     render(<PlaylistsScreen />);
     await act(async () => {});
     expect(mockGetPlaylists).toHaveBeenCalledWith('http://srv', 'bob', 'secret');
+  });
+
+  it('pressing a playlist row navigates to its detail screen', async () => {
+    setServerConfig(1, { url: 'http://s', usr: 'u', passwd: 'p' });
+    setLastPingedServerIndex(1);
+    mockGetPlaylists.mockResolvedValue({
+      ok: true,
+      playlists: [{ id: 'xyz', name: 'My Mix' }],
+    });
+    render(<PlaylistsScreen />);
+    await act(async () => {});
+    fireEvent.press(screen.getByTestId('playlist-row'));
+    expect(mockPush).toHaveBeenCalledWith('/playlist/xyz');
   });
 });

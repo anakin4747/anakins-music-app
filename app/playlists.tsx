@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { SwipeBackView } from '@/components/SwipeBackView';
@@ -54,9 +54,9 @@ export default function PlaylistsScreen() {
           )}
 
           {state.phase === 'done' && state.playlists.map((playlist) => (
-            <View key={playlist.id} testID="playlist-row" style={styles.row}>
+            <Pressable key={playlist.id} testID="playlist-row" style={styles.row} onPress={() => router.push(`/playlist/${playlist.id}`)}>
               <Text style={styles.rowText}>{playlist.name}</Text>
-            </View>
+            </Pressable>
           ))}
         </ScrollView>
       </SafeAreaView>

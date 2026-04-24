@@ -1,10 +1,12 @@
 import React from 'react';
-import { render, screen, act } from '@testing-library/react-native';
+import { render, screen, act, fireEvent } from '@testing-library/react-native';
 import AlbumsScreen from '../../../app/albums';
 import { resetServerConfigs, setServerConfig, setLastPingedServerIndex } from '@/stores/serverConfigs';
 
+const mockPush = jest.fn();
+
 jest.mock('expo-router', () => ({
-  useRouter: () => ({ back: jest.fn() }),
+  useRouter: () => ({ back: jest.fn(), push: mockPush }),
 }));
 
 jest.mock('react-native-safe-area-context', () => ({
@@ -26,6 +28,7 @@ describe('AlbumsScreen', () => {
   beforeEach(() => {
     resetServerConfigs();
     mockGetAlbums.mockClear();
+    mockPush.mockClear();
   });
 
   it('renders the albums heading', () => {
@@ -94,5 +97,18 @@ describe('AlbumsScreen', () => {
     render(<AlbumsScreen />);
     await act(async () => {});
     expect(mockGetAlbums).toHaveBeenCalledWith('http://srv', 'bob', 'secret');
+  });
+
+  it('pressing an album row navigates to its detail screen', async () => {
+    setServerConfig(1, { url: 'http://s', usr: 'u', passwd: 'p' });
+    setLastPingedServerIndex(1);
+    mockGetAlbums.mockResolvedValue({
+      ok: true,
+      albums: [{ id: 'abc', name: 'Abbey Road', artist: 'Beatles' }],
+    });
+    render(<AlbumsScreen />);
+    await act(async () => {});
+    fireEvent.press(screen.getByTestId('album-row'));
+    expect(mockPush).toHaveBeenCalledWith('/album/abc');
   });
 });

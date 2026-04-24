@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { SwipeBackView } from '@/components/SwipeBackView';
@@ -54,10 +54,10 @@ export default function AlbumsScreen() {
           )}
 
           {state.phase === 'done' && state.albums.map((album) => (
-            <View key={album.id} testID="album-row" style={styles.row}>
+            <Pressable key={album.id} testID="album-row" style={styles.row} onPress={() => router.push(`/album/${album.id}`)}>
               <Text style={styles.rowText}>{album.name}</Text>
               <Text style={styles.rowText}>{album.artist}</Text>
-            </View>
+            </Pressable>
           ))}
         </ScrollView>
       </SafeAreaView>
