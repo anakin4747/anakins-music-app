@@ -11,5 +11,9 @@ describe('toOrdinal', () => {
   it('returns eighth for 8', () => expect(toOrdinal(8)).toBe('eighth'));
   it('returns ninth for 9', () => expect(toOrdinal(9)).toBe('ninth'));
   it('returns tenth for 10', () => expect(toOrdinal(10)).toBe('tenth'));
-  it('falls back to the number as a string beyond tenth', () => expect(toOrdinal(11)).toBe('11'));
+  it('returns eleventh for 11', () => expect(toOrdinal(11)).toBe('eleventh'));
+  it('returns twelfth for 12', () => expect(toOrdinal(12)).toBe('twelfth'));
+  it('returns thirteenth for 13', () => expect(toOrdinal(13)).toBe('thirteenth'));
+  it('returns twentieth for 20', () => expect(toOrdinal(20)).toBe('twentieth'));
+  it('falls back to the number as a string beyond twentieth', () => expect(toOrdinal(21)).toBe('21'));
 });
