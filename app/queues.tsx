@@ -1,24 +1,23 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text } from 'react-native';
+import { useRouter } from 'expo-router';
+import { SwipeBackView } from '@/components/SwipeBackView';
 
 export default function QueuesScreen() {
+  const router = useRouter();
+
   return (
-    <View style={styles.container}>
+    <SwipeBackView onSwipeRight={() => router.back()}>
       <Text style={styles.heading}>queues</Text>
-    </View>
+    </SwipeBackView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#000000',
-    paddingHorizontal: 24,
-    justifyContent: 'center',
-  },
   heading: {
     fontSize: 24,
     fontFamily: 'JetBrainsMono_400Regular',
     color: '#ffffff',
     letterSpacing: 1,
+    paddingHorizontal: 24,
   },
 });
