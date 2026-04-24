@@ -19,6 +19,31 @@ export type PlaylistsResult = { ok: true; playlists: PlaylistItem[] } | { ok: fa
 export type AlbumDetailResult = { ok: true; album: AlbumItem; songs: SongItem[] } | { ok: false; error: FetchError };
 export type PlaylistDetailResult = { ok: true; playlist: PlaylistItem; songs: SongItem[] } | { ok: false; error: FetchError };
 
+// subsonic-api's TypeScript types don't fully cover the responses it returns.
+// These local interfaces describe the shapes we actually use so we can cast
+// once here and keep the rest of the service type-safe.
+interface SubsonicAlbumListResponse {
+  albumList2: { album?: AlbumItem[] };
+}
+interface SubsonicAlbumDetailResponse {
+  album: AlbumItem & { song?: SongItem[] };
+}
+interface SubsonicPlaylistDetailResponse {
+  playlist: PlaylistItem & { entry?: SongItem[] };
+}
+interface SubsonicPlaylistsResponse {
+  playlists: { playlist?: PlaylistItem[] };
+}
+
+type SubsonicClient = SubsonicAPI & {
+  getAlbum(params: { id: string }): Promise<SubsonicAlbumDetailResponse>;
+  getPlaylist(params: { id: string }): Promise<SubsonicPlaylistDetailResponse>;
+};
+
+function asSubsonic(api: SubsonicAPI): SubsonicClient {
+  return api as unknown as SubsonicClient;
+}
+
 function isValidUrl(url: string): boolean {
   try { new URL(url); return true; } catch { return false; }
 }
@@ -74,7 +99,7 @@ export async function getAlbums(url: string, username: string, password: string)
   try {
     const api = makeApi(url, username, password);
     const res = await api.getAlbumList2({ type: 'alphabeticalByName', size: 500 });
-    const albums = (res as { albumList2: { album?: AlbumItem[] } }).albumList2?.album ?? [];
+    const albums = (res as unknown as SubsonicAlbumListResponse).albumList2?.album ?? [];
     return { ok: true, albums };
   } catch (err) {
     return { ok: false, error: classifyNetworkError(err) };
@@ -87,7 +112,7 @@ export async function getPlaylists(url: string, username: string, password: stri
   try {
     const api = makeApi(url, username, password);
     const res = await api.getPlaylists({});
-    const playlists = (res as { playlists: { playlist?: PlaylistItem[] } }).playlists?.playlist ?? [];
+    const playlists = (res as unknown as SubsonicPlaylistsResponse).playlists?.playlist ?? [];
     return { ok: true, playlists };
   } catch (err) {
     return { ok: false, error: classifyNetworkError(err) };
@@ -99,7 +124,7 @@ export async function getAlbum(url: string, username: string, password: string, 
 
   try {
     const api = makeApi(url, username, password);
-    const res = await (api as unknown as { getAlbum: (p: { id: string }) => Promise<{ album: AlbumItem & { song?: SongItem[] } }> }).getAlbum({ id });
+    const res = await asSubsonic(api).getAlbum({ id });
     const { song: songs = [], ...albumFields } = res.album;
     return { ok: true, album: albumFields as AlbumItem, songs };
   } catch (err) {
@@ -112,7 +137,7 @@ export async function getPlaylist(url: string, username: string, password: strin
 
   try {
     const api = makeApi(url, username, password);
-    const res = await (api as unknown as { getPlaylist: (p: { id: string }) => Promise<{ playlist: PlaylistItem & { entry?: SongItem[] } }> }).getPlaylist({ id });
+    const res = await asSubsonic(api).getPlaylist({ id });
     const { entry: songs = [], ...playlistFields } = res.playlist;
     return { ok: true, playlist: playlistFields as PlaylistItem, songs };
   } catch (err) {
