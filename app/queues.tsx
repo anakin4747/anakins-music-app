@@ -1,16 +1,22 @@
 import { StyleSheet, Text } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { SwipeBackView } from '@/components/SwipeBackView';
+import { toOrdinal } from '@/utils/ordinal';
 
 export default function QueuesScreen() {
   const router = useRouter();
+  const params = useLocalSearchParams();
+  const index = Number(params.index ?? 1);
 
   return (
-    <SwipeBackView onSwipeRight={() => router.back()}>
+    <SwipeBackView
+      onSwipeRight={() => router.back()}
+      onSwipeLeft={() => router.push({ pathname: '/queues', params: { index: index + 1 } })}
+    >
       <SafeAreaView style={styles.safeArea}>
         <Text testID="queue-heading" style={styles.heading}>
-          first queue
+          {toOrdinal(index)} queue
         </Text>
       </SafeAreaView>
     </SwipeBackView>

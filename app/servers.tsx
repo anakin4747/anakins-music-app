@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { SwipeBackView } from '@/components/SwipeBackView';
 import { ping, PingResult } from '@/services/navidrome';
+import { toOrdinal } from '@/utils/ordinal';
 
 // Persisted across navigations (stack unmounts the component on back).
 let persistedUrl = '';
@@ -21,6 +22,8 @@ const LOG_MESSAGES: Record<PingResult, string> = {
 
 export default function ServersScreen() {
   const router = useRouter();
+  const params = useLocalSearchParams();
+  const index = Number(params.index ?? 1);
   const [url, setUrl] = useState(persistedUrl);
   const [usr, setUsr] = useState(persistedUsr);
   const [passwd, setPasswd] = useState(persistedPasswd);
@@ -52,7 +55,10 @@ export default function ServersScreen() {
   }
 
   return (
-    <SwipeBackView onSwipeRight={() => router.back()}>
+    <SwipeBackView
+      onSwipeRight={() => router.back()}
+      onSwipeLeft={() => router.push({ pathname: '/servers', params: { index: index + 1 } })}
+    >
       <SafeAreaView style={styles.safeArea}>
         <ScrollView
           testID="server-scroll-view"
@@ -60,7 +66,7 @@ export default function ServersScreen() {
           contentContainerStyle={styles.inner}
         >
           <Text testID="server-heading" style={styles.heading}>
-            first server
+            {toOrdinal(index)} server
           </Text>
 
           <View style={styles.field}>

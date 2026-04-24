@@ -5,10 +5,11 @@ const SWIPE_THRESHOLD = 50;
 
 interface SwipeBackViewProps {
   onSwipeRight: () => void;
+  onSwipeLeft?: () => void;
   children: ReactNode;
 }
 
-export function SwipeBackView({ onSwipeRight, children }: SwipeBackViewProps) {
+export function SwipeBackView({ onSwipeRight, onSwipeLeft, children }: SwipeBackViewProps) {
   const panResponder = useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: () => true,
@@ -16,6 +17,8 @@ export function SwipeBackView({ onSwipeRight, children }: SwipeBackViewProps) {
       onPanResponderRelease: (_evt, gestureState) => {
         if (gestureState.dx > SWIPE_THRESHOLD) {
           onSwipeRight();
+        } else if (gestureState.dx < -SWIPE_THRESHOLD) {
+          onSwipeLeft?.();
         }
       },
     })
