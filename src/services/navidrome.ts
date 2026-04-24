@@ -8,6 +8,32 @@ export type PingResult =
   | 'unreachable'
   | 'timed-out';
 
+export type FetchError = 'invalid-url' | 'server-not-found' | 'unreachable';
+
+export interface AlbumItem { id: string; name: string; artist: string }
+export interface PlaylistItem { id: string; name: string }
+
+export type AlbumsResult = { ok: true; albums: AlbumItem[] } | { ok: false; error: FetchError };
+export type PlaylistsResult = { ok: true; playlists: PlaylistItem[] } | { ok: false; error: FetchError };
+
+function makeApi(url: string, username: string, password: string): SubsonicAPI {
+  return new SubsonicAPI({
+    url,
+    auth: { username, password },
+    salt: Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2),
+    reuseSalt: true,
+  });
+}
+
+function classifyNetworkError(err: unknown): FetchError {
+  if (err instanceof Error) {
+    const cause = (err as { cause?: { code?: string } }).cause;
+    if (cause?.code === 'ENOTFOUND') return 'server-not-found';
+    if (cause?.code === 'ECONNREFUSED') return 'unreachable';
+  }
+  return 'unreachable';
+}
+
 export async function ping(url: string, username: string, password: string): Promise<PingResult> {
   try {
     new URL(url);
@@ -15,12 +41,7 @@ export async function ping(url: string, username: string, password: string): Pro
     return 'invalid-url';
   }
 
-  const api = new SubsonicAPI({
-    url,
-    auth: { username, password },
-    salt: Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2),
-    reuseSalt: true,
-  });
+  const api = makeApi(url, username, password);
 
   let timer: ReturnType<typeof setTimeout>;
   const timeoutPromise = new Promise<never>((_, reject) => {
@@ -47,5 +68,39 @@ export async function ping(url: string, username: string, password: string): Pro
     return 'unreachable';
   } finally {
     clearTimeout(timer!);
+  }
+}
+
+export async function getAlbums(url: string, username: string, password: string): Promise<AlbumsResult> {
+  try {
+    new URL(url);
+  } catch {
+    return { ok: false, error: 'invalid-url' };
+  }
+
+  try {
+    const api = makeApi(url, username, password);
+    const res = await api.getAlbumList2({ type: 'alphabeticalByName', size: 500 });
+    const albums = (res as { albumList2: { album?: AlbumItem[] } }).albumList2?.album ?? [];
+    return { ok: true, albums };
+  } catch (err) {
+    return { ok: false, error: classifyNetworkError(err) };
+  }
+}
+
+export async function getPlaylists(url: string, username: string, password: string): Promise<PlaylistsResult> {
+  try {
+    new URL(url);
+  } catch {
+    return { ok: false, error: 'invalid-url' };
+  }
+
+  try {
+    const api = makeApi(url, username, password);
+    const res = await api.getPlaylists({});
+    const playlists = (res as { playlists: { playlist?: PlaylistItem[] } }).playlists?.playlist ?? [];
+    return { ok: true, playlists };
+  } catch (err) {
+    return { ok: false, error: classifyNetworkError(err) };
   }
 }
