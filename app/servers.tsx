@@ -26,26 +26,16 @@ export default function ServersScreen() {
   const [passwd, setPasswd] = useState(stored.passwd);
   const [log, setLog] = useState<string[]>([]);
 
-  function handleUrlChange(text: string) {
-    setServerConfig(index, { url: text });
-    setUrl(text);
-  }
-
-  function handleUsrChange(text: string) {
-    setServerConfig(index, { usr: text });
-    setUsr(text);
-  }
-
-  function handlePasswdChange(text: string) {
-    setServerConfig(index, { passwd: text });
-    setPasswd(text);
-  }
+  function handleUrlChange(text: string) { setUrl(text); }
+  function handleUsrChange(text: string) { setUsr(text); }
+  function handlePasswdChange(text: string) { setPasswd(text); }
 
   async function handlePing() {
     if (!url) { setLog(['url required']); return; }
     if (!usr) { setLog(['usr required']); return; }
     if (!passwd) { setLog(['passwd required']); return; }
 
+    setServerConfig(index, { url, usr, passwd });
     setLastPingedServerIndex(index);
     setLog((prev) => [...prev, 'ping sent']);
     const result = await ping(url, usr, passwd);
