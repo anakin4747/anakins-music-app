@@ -18,6 +18,8 @@
           buildInputs = with pkgs; [
             nodejs_20
             git
+            navidrome
+            ffmpeg
           ];
 
           shellHook = ''
