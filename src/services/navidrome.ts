@@ -15,7 +15,12 @@ export async function ping(url: string, username: string, password: string): Pro
     return 'invalid-url';
   }
 
-  const api = new SubsonicAPI({ url, auth: { username, password } });
+  const api = new SubsonicAPI({
+    url,
+    auth: { username, password },
+    salt: Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2),
+    reuseSalt: true,
+  });
 
   let timer: ReturnType<typeof setTimeout>;
   const timeoutPromise = new Promise<never>((_, reject) => {
