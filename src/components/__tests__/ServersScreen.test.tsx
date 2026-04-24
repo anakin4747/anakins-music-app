@@ -24,4 +24,34 @@ describe('ServersScreen', () => {
     render(<ServersScreen />);
     expect(screen.queryByTestId('server-item-1')).toBeNull();
   });
+
+  it('renders the url label', () => {
+    render(<ServersScreen />);
+    expect(screen.getByTestId('server-url-label')).toHaveTextContent('url');
+  });
+
+  it('renders the url input', () => {
+    render(<ServersScreen />);
+    expect(screen.getByTestId('server-url-input')).toBeTruthy();
+  });
+
+  it('renders the usr label', () => {
+    render(<ServersScreen />);
+    expect(screen.getByTestId('server-usr-label')).toHaveTextContent('usr');
+  });
+
+  it('renders the usr input', () => {
+    render(<ServersScreen />);
+    expect(screen.getByTestId('server-usr-input')).toBeTruthy();
+  });
+
+  it('renders the passwd label', () => {
+    render(<ServersScreen />);
+    expect(screen.getByTestId('server-passwd-label')).toHaveTextContent('passwd');
+  });
+
+  it('renders the passwd input', () => {
+    render(<ServersScreen />);
+    expect(screen.getByTestId('server-passwd-input')).toBeTruthy();
+  });
 });
