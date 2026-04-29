@@ -2,6 +2,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SongItem } from '@/services/navidrome';
 import { addSongToQueue } from '@/stores/queues';
 import { toOrdinal } from '@/utils/ordinal';
+import { SwipeBackView } from '@/components/SwipeBackView';
 
 const MAX_QUEUES = 3;
 
@@ -20,21 +21,23 @@ export function SongActionMenu({ song, onClose, populatedQueueCount }: SongActio
   }
 
   return (
-    <View testID="song-action-menu" style={styles.overlay}>
-      <TouchableOpacity style={styles.backdrop} onPress={onClose} />
-      <View style={styles.menu}>
-        {Array.from({ length: buttonCount }, (_, i) => i + 1).map((n) => (
-          <TouchableOpacity
-            key={n}
-            testID={`add-to-queue-${n}`}
-            style={styles.button}
-            onPress={() => handleAddToQueue(n)}
-          >
-            <Text style={styles.buttonText}>{toOrdinal(n)} queue</Text>
-          </TouchableOpacity>
-        ))}
+    <SwipeBackView onSwipeRight={onClose}>
+      <View testID="song-action-menu" style={styles.overlay}>
+        <TouchableOpacity style={styles.backdrop} onPress={onClose} />
+        <View style={styles.menu}>
+          {Array.from({ length: buttonCount }, (_, i) => i + 1).map((n) => (
+            <TouchableOpacity
+              key={n}
+              testID={`add-to-queue-${n}`}
+              style={styles.button}
+              onPress={() => handleAddToQueue(n)}
+            >
+              <Text style={styles.buttonText}>{toOrdinal(n)} queue</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
       </View>
-    </View>
+    </SwipeBackView>
   );
 }
 

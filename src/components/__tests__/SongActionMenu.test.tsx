@@ -1,13 +1,25 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react-native';
+import { PanResponder } from 'react-native';
 import { SongActionMenu } from '../SongActionMenu';
 import { SongItem } from '@/services/navidrome';
 import { resetQueues, getSongsInQueue } from '@/stores/queues';
 
 const song: SongItem = { id: '42', title: 'Test Song', track: 3, duration: 210 };
 
+type PanResponderConfig = Parameters<typeof PanResponder.create>[0];
+let capturedConfig: PanResponderConfig = {};
+
 beforeEach(() => {
   resetQueues();
+  jest.spyOn(PanResponder, 'create').mockImplementation((config) => {
+    capturedConfig = config;
+    return { panHandlers: {} };
+  });
+});
+
+afterEach(() => {
+  jest.restoreAllMocks();
 });
 
 describe('SongActionMenu', () => {
@@ -54,6 +66,13 @@ describe('SongActionMenu', () => {
     render(<SongActionMenu song={song} onClose={onClose} populatedQueueCount={1} />);
     fireEvent.press(screen.getByTestId('add-to-queue-2'));
     expect(getSongsInQueue(2)).toEqual([song]);
+    expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
+  it('calls onClose when swiped right', () => {
+    const onClose = jest.fn();
+    render(<SongActionMenu song={song} onClose={onClose} populatedQueueCount={0} />);
+    capturedConfig.onPanResponderRelease?.({} as any, { dx: 80 } as any);
     expect(onClose).toHaveBeenCalledTimes(1);
   });
 });
