@@ -3,8 +3,11 @@ import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { SwipeBackView } from '@/components/SwipeBackView';
+import { SwipeOpenView } from '@/components/SwipeOpenView';
+import { SongActionMenu } from '@/components/SongActionMenu';
 import { getAlbum, AlbumItem, SongItem, FetchError } from '@/services/navidrome';
 import { getLastPingedServerConfig } from '@/stores/serverConfigs';
+import { getPopulatedQueueCount } from '@/stores/queues';
 
 type State =
   | { phase: 'no-server' }
@@ -19,6 +22,7 @@ export default function AlbumDetailScreen() {
     const cfg = getLastPingedServerConfig();
     return cfg ? { phase: 'loading' } : { phase: 'no-server' };
   });
+  const [selectedSong, setSelectedSong] = useState<SongItem | null>(null);
 
   useEffect(() => {
     const cfg = getLastPingedServerConfig();
@@ -53,14 +57,23 @@ export default function AlbumDetailScreen() {
               <Text testID="album-detail-name" style={styles.heading}>{state.album.name}</Text>
               <Text testID="album-detail-artist" style={styles.subheading}>{state.album.artist}</Text>
               {state.songs.map((song) => (
-                <View key={song.id} testID="song-row" style={styles.row}>
-                  <Text style={styles.rowText}>{song.track}. {song.title}</Text>
-                </View>
+                <SwipeOpenView key={song.id} onSwipeLeft={() => setSelectedSong(song)}>
+                  <View testID="song-row" style={styles.row}>
+                    <Text style={styles.rowText}>{song.track}. {song.title}</Text>
+                  </View>
+                </SwipeOpenView>
               ))}
             </>
           )}
         </ScrollView>
       </SafeAreaView>
+      {selectedSong && (
+        <SongActionMenu
+          song={selectedSong}
+          onClose={() => setSelectedSong(null)}
+          populatedQueueCount={getPopulatedQueueCount()}
+        />
+      )}
     </SwipeBackView>
   );
 }

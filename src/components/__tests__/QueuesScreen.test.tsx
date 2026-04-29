@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react-native';
 import QueuesScreen from '../../../app/queues';
+import { addSongToQueue, resetQueues } from '@/stores/queues';
 
 const mockPush = jest.fn();
 let mockParams: Record<string, string> = {};
@@ -28,6 +29,7 @@ describe('QueuesScreen', () => {
     mockParams = {};
     mockPush.mockClear();
     capturedOnSwipeLeft = undefined;
+    resetQueues();
   });
 
   it('renders first queue at the top', () => {
@@ -57,5 +59,24 @@ describe('QueuesScreen', () => {
     render(<QueuesScreen />);
     capturedOnSwipeLeft?.();
     expect(mockPush).toHaveBeenCalledWith({ pathname: '/queues', params: { index: 2 } });
+  });
+
+  it('renders songs added to the queue', () => {
+    addSongToQueue(1, { id: 's1', title: 'Come Together', track: 1, duration: 200 });
+    render(<QueuesScreen />);
+    expect(screen.getByTestId('queue-song-s1')).toHaveTextContent('1. Come Together');
+  });
+
+  it('does not show songs from a different queue', () => {
+    addSongToQueue(2, { id: 's2', title: 'Something', track: 2, duration: 180 });
+    render(<QueuesScreen />);
+    expect(screen.queryByTestId('queue-song-s2')).toBeNull();
+  });
+
+  it('shows songs for the current queue index', () => {
+    mockParams = { index: '2' };
+    addSongToQueue(2, { id: 's2', title: 'Something', track: 2, duration: 180 });
+    render(<QueuesScreen />);
+    expect(screen.getByTestId('queue-song-s2')).toHaveTextContent('2. Something');
   });
 });

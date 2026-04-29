@@ -1,7 +1,8 @@
 import React from 'react';
-import { render, screen, act } from '@testing-library/react-native';
+import { render, screen, act, fireEvent } from '@testing-library/react-native';
 import AlbumDetailScreen from '../../../app/album/[id]';
 import { resetServerConfigs, setServerConfig, setLastPingedServerIndex } from '@/stores/serverConfigs';
+import { resetQueues } from '@/stores/queues';
 
 jest.mock('expo-router', () => ({
   useRouter: () => ({ back: jest.fn() }),
@@ -16,6 +17,14 @@ jest.mock('@/components/SwipeBackView', () => ({
   SwipeBackView: ({ children }: { children: React.ReactNode }) => children,
 }));
 
+let capturedOnSwipeLeft: (() => void) | undefined;
+jest.mock('@/components/SwipeOpenView', () => ({
+  SwipeOpenView: ({ children, onSwipeLeft }: { children: React.ReactNode; onSwipeLeft: () => void }) => {
+    capturedOnSwipeLeft = onSwipeLeft;
+    return children;
+  },
+}));
+
 jest.mock('@/services/navidrome', () => ({
   getAlbum: jest.fn(),
 }));
@@ -26,6 +35,7 @@ const mockGetAlbum = getAlbum as jest.MockedFunction<typeof getAlbum>;
 describe('AlbumDetailScreen', () => {
   beforeEach(() => {
     resetServerConfigs();
+    resetQueues();
     mockGetAlbum.mockClear();
   });
 
@@ -82,6 +92,35 @@ describe('AlbumDetailScreen', () => {
     render(<AlbumDetailScreen />);
     await act(async () => {});
     expect(screen.getByTestId('album-detail-error')).toHaveTextContent('unreachable');
+  });
+
+  it('swiping left on a song row opens the action menu', async () => {
+    setServerConfig(1, { url: 'http://s', usr: 'u', passwd: 'p' });
+    setLastPingedServerIndex(1);
+    mockGetAlbum.mockResolvedValue({
+      ok: true,
+      album: { id: '42', name: 'Abbey Road', artist: 'Beatles' },
+      songs: [{ id: 's1', title: 'Come Together', track: 1 }],
+    });
+    render(<AlbumDetailScreen />);
+    await act(async () => {});
+    await act(async () => { capturedOnSwipeLeft?.(); });
+    expect(screen.getByTestId('song-action-menu')).toBeTruthy();
+  });
+
+  it('dismissing the action menu removes it from screen', async () => {
+    setServerConfig(1, { url: 'http://s', usr: 'u', passwd: 'p' });
+    setLastPingedServerIndex(1);
+    mockGetAlbum.mockResolvedValue({
+      ok: true,
+      album: { id: '42', name: 'Abbey Road', artist: 'Beatles' },
+      songs: [{ id: 's1', title: 'Come Together', track: 1 }],
+    });
+    render(<AlbumDetailScreen />);
+    await act(async () => {});
+    await act(async () => { capturedOnSwipeLeft?.(); });
+    fireEvent.press(screen.getByTestId('add-to-queue-1'));
+    expect(screen.queryByTestId('song-action-menu')).toBeNull();
   });
 
   it('fetches using the last pinged server credentials and the route id', async () => {
